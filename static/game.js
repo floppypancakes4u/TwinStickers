@@ -1,5 +1,6 @@
 import { Controller } from './utility/controller.js';
 import { ActorManagerClient } from './utility/ActorManagerClient.js';
+import { log } from './shared/helpers.js';
 
 var culledActorsCount = 0;
 
@@ -136,13 +137,13 @@ class World extends Phaser.Scene {
         camBounds
       );
 
-      //console.log(`Actor: ${actor.id}, Bounds: ${JSON.stringify(actorBounds)}, Intersects: ${intersects}`);
+      //log(`Actor: ${actor.id}, Bounds: ${JSON.stringify(actorBounds)}, Intersects: ${intersects}`);
 
       if (intersects) {
         actor.update(delta);
       } else {
         culledActorsCount++;
-        //console.log(`Culling actor: ${actor.id}`);
+        //log(`Culling actor: ${actor.id}`);
       }
     }
 
@@ -300,14 +301,14 @@ class World extends Phaser.Scene {
 
     // Connection opened
     this.socket.on('connect', () => {
-      console.log('Connected to the Socket.io server');
+      log('Connected to the Socket.io server');
       // Send a message to the server
       this.socket.emit('message', 'Hello, server!');
     });
 
     // Listen for messages from the server
     this.socket.on('message', (data) => {
-      console.log('Message from server:', data);
+      log('Message from server:', data);
     });
 
     // Listen for possible errors
@@ -317,10 +318,10 @@ class World extends Phaser.Scene {
 
     // Handle the socket closing
     this.socket.on('disconnect', (reason) => {
-      console.log('Socket.io connection closed:', reason);
+      log('Socket.io connection closed:', reason);
     });
 
-    console.log('setupSockets called');
+    log('setupSockets called');
   }
 
   shutdown() {

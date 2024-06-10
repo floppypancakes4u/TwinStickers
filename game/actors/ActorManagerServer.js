@@ -1,6 +1,7 @@
 import { ServerPlayerController } from '../utility/ServerPlayerController.js';
 import { ServerActor } from './ServerActor.js';
 import { performance } from 'perf_hooks';
+import { log } from '../../shared/helpers.js';
 import crypto, { randomUUID } from 'crypto';
 
 export const ActorManagerServer = {
@@ -88,9 +89,9 @@ export const ActorManagerServer = {
 
   spawnActor(data) {
     let spawnedActors = [];
-    const spawnOptions = data.spawnOptions || {};
+    const spawnOptions = data || {};
 
-    //console.log('spawn data', spawnOptions);
+    log('spawn data', spawnOptions);
 
     if (spawnOptions?.qty > 0) {
       for (let i = 0; i < spawnOptions.qty; i++) {

@@ -12,6 +12,7 @@ export const ActorManagerClient = {
     this.scene = scene;
 
     this.socket.on('actorSpawned', (data) => {
+      console.log("ActorManagerClient got actorSpawned", data)
       this.spawnActor(data);
     });
 

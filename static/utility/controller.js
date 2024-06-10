@@ -1,3 +1,4 @@
+import { log } from '../shared/helpers.js';
 import Camera from './camera.js';
 import { ActorManagerClient } from './ActorManagerClient.js';
 
@@ -20,6 +21,8 @@ export class Controller {
     // setInterval(() => {
     //   if (this.focusedEntity != null) this.followFocusedEntity();
     // }, 0);
+
+   log('Controller initialized'); 
   }
 
   setupInputListeners() {
@@ -70,6 +73,7 @@ export class Controller {
     });
 
     this.socket.on('actorSpawned', (data) => {
+      console.log("Controller got actorSpawned", data)
       if (data.id === this.socket.id) {
         this.playerEntity = ActorManagerClient.getActorByID(data.id);
         this.playerEntity.setController(this);

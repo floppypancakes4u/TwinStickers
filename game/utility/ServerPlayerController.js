@@ -1,4 +1,5 @@
 import { ServerActor } from '../actors/ServerActor.js';
+import { log } from '../../shared/helpers.js';
 
 export class ServerPlayerController {
   constructor(socket, actorManager) {
@@ -26,6 +27,8 @@ export class ServerPlayerController {
         roam: false,
       },
     };
+
+    log("calling this.actorManager.spawnActor(actorData)", actorData)
     this.actor = this.actorManager.spawnActor(actorData);
     //this.actorManager.actors.set(this.socket.id, this.actor);
 
