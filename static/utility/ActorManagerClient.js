@@ -1,4 +1,4 @@
-import { log } from '../../shared/helpers.js';
+import { log } from '../shared/helpers.js';
 import { ClientActor } from '../classes/ClientActor.js';
 
 export const ActorManagerClient = {
