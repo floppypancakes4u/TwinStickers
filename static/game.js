@@ -301,14 +301,14 @@ class World extends Phaser.Scene {
 
     // Connection opened
     this.socket.on('connect', () => {
-      log('Connected to the Socket.io server');
+      log.debug('Connected to the Socket.io server');
       // Send a message to the server
       this.socket.emit('message', 'Hello, server!');
     });
 
     // Listen for messages from the server
     this.socket.on('message', (data) => {
-      log('Message from server:', data);
+      log.debug('Message from server:', data);
     });
 
     // Listen for possible errors
@@ -318,10 +318,10 @@ class World extends Phaser.Scene {
 
     // Handle the socket closing
     this.socket.on('disconnect', (reason) => {
-      log('Socket.io connection closed:', reason);
+      log.debug('Socket.io connection closed:', reason);
     });
 
-    log('setupSockets called');
+    log.debug('setupSockets called');
   }
 
   shutdown() {

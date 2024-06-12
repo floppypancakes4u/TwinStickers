@@ -28,7 +28,7 @@ export class ServerPlayerController {
       },
     };
 
-    log("calling this.actorManager.spawnActor(actorData)", actorData)
+    //log("calling this.actorManager.spawnActor(actorData)", actorData)
     this.actor = this.actorManager.spawnActor(actorData);
     //this.actorManager.actors.set(this.socket.id, this.actor);
 

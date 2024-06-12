@@ -18,7 +18,7 @@ export const ActorManagerServer = {
     this.io = io;
 
     io.on('connection', (socket) => {
-      console.log(`Client connected: ${socket.id}`);
+      log.debug(`Client connected:`, socket.id);
       const playerController = new ServerPlayerController(socket, this);
       this.playerControllers.set(socket.id, playerController);
 
@@ -91,7 +91,7 @@ export const ActorManagerServer = {
     let spawnedActors = [];
     const spawnOptions = data || {};
 
-    log('spawn data', spawnOptions);
+    log.debug('spawn data', spawnOptions);
 
     if (spawnOptions?.qty > 0) {
       for (let i = 0; i < spawnOptions.qty; i++) {

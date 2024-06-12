@@ -7,12 +7,12 @@ export const ActorManagerClient = {
   controllerRef: null,
 
   init(scene) {
-    console.log('init scene:', scene);
+    console.log('Init ActorManagerClient');
     this.socket = scene.socket;
     this.scene = scene;
 
     this.socket.on('actorSpawned', (data) => {
-      console.log("ActorManagerClient got actorSpawned", data)
+      log.debug("ActorManagerClient got actorSpawned", data)
       this.spawnActor(data);
     });
 

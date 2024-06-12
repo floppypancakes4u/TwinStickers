@@ -1,5 +1,6 @@
 import { MovementComponent } from '../shared/MovementComponent.js';
 import { Engine } from './Engine.js';
+import { log } from '../shared/helpers.js'
 
 export class ClientActor extends Phaser.GameObjects.Sprite {
   constructor({ scene, x, y, texture, frame } = {}) {
@@ -63,6 +64,8 @@ export class ClientActor extends Phaser.GameObjects.Sprite {
         this.controller.setHoveredEntity(null);
       }
     });
+
+    log.debug("Created Client Ship Actor", this)
   }
 
   setController(controller) {

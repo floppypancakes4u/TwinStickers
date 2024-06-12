@@ -22,7 +22,7 @@ export class Controller {
     //   if (this.focusedEntity != null) this.followFocusedEntity();
     // }, 0);
 
-   log('Controller initialized'); 
+   log.debug('Controller initialized'); 
   }
 
   setupInputListeners() {
