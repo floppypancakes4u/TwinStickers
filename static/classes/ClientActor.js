@@ -36,7 +36,7 @@ export class ClientActor extends Phaser.GameObjects.Sprite {
     this.thrust = 5;
     this.brakingThrust = this.thrust / 5;
     this.rotationThrust = 360 // 360 is needed per 1000 effectiveWeight to turn once per second
-    this.maxSpeed = 100;
+    this.maxSpeed = 20;
     this.weight = {
       base: 1000,
       effective: 1000,
@@ -71,7 +71,7 @@ export class ClientActor extends Phaser.GameObjects.Sprite {
       }
     });
 
-    log.debug("Created Client Ship Actor", this)
+    //log.debug("Created Client Ship Actor", this)
   }
 
   setController(controller) {
@@ -253,7 +253,7 @@ export class ClientActor extends Phaser.GameObjects.Sprite {
     }
 
     this.autoPilotTarget.previousDistance = distance;
-}
+  } 
 
   
   // handleAutoPilot() {

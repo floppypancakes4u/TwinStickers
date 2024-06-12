@@ -94,7 +94,7 @@ export const ActorManagerServer = {
     let spawnedActors = [];
     const spawnOptions = data || {};
 
-    log.debug('spawn data', spawnOptions);
+    //log.debug('spawn data', spawnOptions);
 
     if (spawnOptions?.qty > 0) {
       for (let i = 0; i < spawnOptions.qty; i++) {
@@ -146,6 +146,7 @@ export const ActorManagerServer = {
   },
 
   updateActor(actor) {
+    log.info("updateActor", actor)
     if (actor) {
       const updateData = {
         id: actor.id,
@@ -157,7 +158,7 @@ export const ActorManagerServer = {
         isBreaking: actor.isBreaking,
       };
 
-      //console.log("updateData", { updateData })
+      log.debug("updateData", { updateData })
       this.io.emit('actorUpdated', updateData);
       actor.needsUpdate = false;
       actor.updates = [];

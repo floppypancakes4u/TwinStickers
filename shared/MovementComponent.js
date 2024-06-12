@@ -9,6 +9,7 @@ export class MovementComponent {
   constructor({ actor }) {
     this.actor = actor;
     this.needsUpdate = false;
+    this.updates = {};
   }
 
   handleShipMovement(delta) {
@@ -23,7 +24,6 @@ export class MovementComponent {
   
     if (this.actor.inputStates.braking) {
       this.applyDeceleration();
-      this.setNeedsUpdate();
     }
   
     if (this.actor.inputStates.rotateLeft) {
@@ -36,9 +36,16 @@ export class MovementComponent {
   
     this.limitSpeed();
   
-    this.actor.x += this.actor.velocity.x;
-    this.actor.y += this.actor.velocity.y;
-    this.setNeedsUpdate();
+    let newX, newY;
+
+    newX = this.actor.x + this.actor.velocity.x;
+    newY = this.actor.y + this.actor.velocity.y;
+
+    if (newX != this.actor.x) this.addNetworkUpdate("x", this.actor.x);
+    if (newY != this.actor.y) this.addNetworkUpdate("y", this.actor.y);
+
+    this.actor.x = newX;
+    this.actor.y = newY;
   }
 
   applyForce(actor, amt, direction = 0) {
@@ -50,8 +57,11 @@ export class MovementComponent {
     actor.velocity.x += forceX * acceleration;
     actor.velocity.y += forceY * acceleration;
 
-    this.limitSpeed();
-    this.setNeedsUpdate();
+    this.limitSpeed();    
+    this.addNetworkUpdate("velocity", {
+      x: this.actor.velocity.x,
+      y: this.actor.velocity.y,
+    });
   }
 
   // applyForce(amt, effectiveWeight) {
@@ -64,7 +74,6 @@ export class MovementComponent {
   //   this.actor.velocity.y += forceY * acceleration;
 
   //   this.limitSpeed();
-  //   this.setNeedsUpdate();
   // }
 
   limitSpeed() {
@@ -73,7 +82,8 @@ export class MovementComponent {
       const scalingFactor = this.actor.maxSpeed / currentSpeed;
       this.actor.velocity.x *= scalingFactor;
       this.actor.velocity.y *= scalingFactor;
-      this.setNeedsUpdate();
+      this.addNetworkUpdate("x", this.actor.velocity.x);    
+      this.addNetworkUpdate("y", this.actor.velocity.y);
     }
   }
 
@@ -88,13 +98,12 @@ export class MovementComponent {
     //this.actor.rotation -= .5;
     
     this.actor.rotation -= this.getRotationRate(delta);
-    this.setNeedsUpdate();
+    this.addNetworkUpdate("rotation", this.actor.rotation);
   }
 
   rotateRight(delta) {
     this.actor.rotation += this.getRotationRate(delta);
-
-    this.setNeedsUpdate();
+    this.addNetworkUpdate("rotation", this.actor.rotation);
   }
 
   getRotationRate(delta) {
@@ -182,15 +191,26 @@ export class MovementComponent {
     if (Math.abs(this.actor.velocity.x) < 0.01) this.actor.velocity.x = 0;
     if (Math.abs(this.actor.velocity.y) < 0.01) this.actor.velocity.y = 0;
   
-    this.setNeedsUpdate();
+    this.addNetworkUpdate("velocity", {
+      x: this.actor.velocity.x,
+      y: this.actor.velocity.y,
+    });    
   }
   
   getVelocityRotation() {
     return Math.atan2(this.actor.velocity.y, this.actor.velocity.x);
   }
 
-  setNeedsUpdate() {
+  addNetworkUpdate(k, v) {
+    this.updates[k] = v;
     this.needsUpdate = true;
+  }
+
+  getAndClearUpdates() {
+    const updates = this.updates;
+    this.updates = {};
+
+    return updates;
   }
 
   getSpeed() {
