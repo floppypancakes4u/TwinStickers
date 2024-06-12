@@ -71,6 +71,7 @@ export const ActorManagerServer = {
       actor.update(deltaTime);
 
       if (actor.needsUpdate) this.updateActor(actor);
+      if (actor.needsMovementUpdate) this.updateActor(actor, "movement");
     }
 
     const endTime = performance.now();
@@ -145,23 +146,39 @@ export const ActorManagerServer = {
     }
   },
 
-  updateActor(actor) {
-    log.info("updateActor", actor)
-    if (actor) {
-      const updateData = {
-        id: actor.id,
-        x: actor.x,
-        y: actor.y,
-        velocity: actor.velocity,
-        rotation: actor.rotation,
-        isThrusting: actor.isThrusting,
-        isBreaking: actor.isBreaking,
-      };
+  updateActor(actor, updateType = "general") {
+    //log.debug("updateActor", {actor, updateType})
 
-      log.debug("updateData", { updateData })
-      this.io.emit('actorUpdated', updateData);
-      actor.needsUpdate = false;
-      actor.updates = [];
+    switch (updateType) {
+      case "general":
+        
+        break;
+    
+      case "movement":
+        const updateData = actor.movementComponent.getAndClearUpdates()
+
+        log.debug("updateData", { id: actor.id, updateData, updateType })
+        this.io.emit('actorUpdated', { id: actor.id, updateData, updateType });
+        break;
+      default:
+        break;
     }
+
+    // if (actor) {
+    //   const updateData = {
+    //     id: actor.id,
+    //     x: actor.x,
+    //     y: actor.y,
+    //     velocity: actor.velocity,
+    //     rotation: actor.rotation,
+    //     isThrusting: actor.isThrusting,
+    //     isBreaking: actor.isBreaking,
+    //   };
+
+    //   log.debug("updateData", { updateData })
+    //   this.io.emit('actorUpdated', updateData);
+    //   actor.needsUpdate = false;
+    //   actor.updates = [];
+    // }
   },
 };

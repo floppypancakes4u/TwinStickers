@@ -60,6 +60,7 @@ export class ServerActor {
     this.spawnOptions = options;
 
     this.needsUpdate = false; // Flag for network update
+    this.needsMovementUpdate = false;
     this.updates = [];
 
     this.movementComponent = new MovementComponent({ actor: this });
@@ -281,11 +282,7 @@ export class ServerActor {
     if (this.autoPilotActive) this.handleAutopilot(deltaTime);
     this.movementComponent.update(deltaTime);
 
-    if (this.movementComponent.needsUpdate) {
-      let actorUpdates = this.movementComponent.getAndClearUpdates();
-
-      log.debug("updates:", actorUpdates)
-    }
+    if (this.movementComponent.needsUpdate) this.needsMovementUpdate = true;
 
     // this.engines.forEach((engine) => {
     //   engine.update();

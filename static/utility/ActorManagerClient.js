@@ -74,12 +74,14 @@ export const ActorManagerClient = {
   // },
 
   updateActor(data) {
-    const { id, ...updateData } = data;
+    const { id, updateData, updateType } = data;
+    log.info(id, updateData, updateType)
     if (this.actors.has(id)) {
       const actor = this.actors.get(id);
       if (this.controllerRef.playerEntity != actor) {
-        Object.assign(actor, updateData);
-        console.log('did');
+        //Object.assign(actor, updateData);
+        actor.rotation = updateData.rotation
+        //console.log('did', actor.rotation);
       } else {        
         console.log('didnt');
       }
