@@ -18,14 +18,14 @@ export const ActorManagerServer = {
     this.io = io;
 
     io.on('connection', (socket) => {
-      log.debug(`Client connected:`, socket.id);
+      log.info(`Client connected:`, socket.id);
       const playerController = new ServerPlayerController(socket, this);
       this.playerControllers.set(socket.id, playerController);
 
       socket.on('spawnActor', this.spawnActor);
 
       socket.on('disconnect', () => {
-        console.log(`Client disconnected: ${socket.id}`);
+        console.info(`Client disconnected: ${socket.id}`);
         if (this.playerControllers.has(socket.id)) {
           this.playerControllers.get(socket.id).destroy();
           this.playerControllers.delete(socket.id);

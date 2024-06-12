@@ -1,3 +1,4 @@
+import { log } from '../../shared/helpers.js';
 import { ClientActor } from '../classes/ClientActor.js';
 
 export const ActorManagerClient = {
@@ -7,7 +8,7 @@ export const ActorManagerClient = {
   controllerRef: null,
 
   init(scene) {
-    console.log('Init ActorManagerClient');
+    log.debug('Init ActorManagerClient');
     this.socket = scene.socket;
     this.scene = scene;
 
