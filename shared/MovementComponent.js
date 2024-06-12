@@ -1,5 +1,9 @@
+import { log } from "./helpers.js";
+
 const ROTATION_STEP = 0.1; // Step size for rotation adjustments
 const DECELERATION_THRESHOLD = 50; // Distance threshold for deceleration
+
+const POUND_FORCE_PER_REVOLUTION = 320;
 
 export class MovementComponent {
   constructor({ actor }) {
@@ -7,7 +11,7 @@ export class MovementComponent {
     this.needsUpdate = false;
   }
 
-  handleShipMovement() {
+  handleShipMovement(delta) {
     this.actor.rotation %= Math.PI * 2;
   
     if (
@@ -23,11 +27,11 @@ export class MovementComponent {
     }
   
     if (this.actor.inputStates.rotateLeft) {
-      this.rotateLeft();
+      this.rotateLeft(delta);
     }
   
     if (this.actor.inputStates.rotateRight) {
-      this.rotateRight();
+      this.rotateRight(delta);
     }
   
     this.limitSpeed();
@@ -80,14 +84,86 @@ export class MovementComponent {
     return { targetAngle, rotationDiff };
   }
 
-  rotateLeft() {
-    this.actor.rotation -= ROTATION_STEP;
+  rotateLeft(delta) {
+    //this.actor.rotation -= .5;
+    
+    this.actor.rotation -= this.getRotationRate(delta);
     this.setNeedsUpdate();
   }
 
-  rotateRight() {
-    this.actor.rotation += ROTATION_STEP;
+  rotateRight(delta) {
+    this.actor.rotation += this.getRotationRate(delta);
+
     this.setNeedsUpdate();
+  }
+
+  getRotationRate(delta) {
+    var force = this.actor.rotationThrust; // force in pounds
+    var weight = this.actor.weight.effective; // weight in pounds
+
+    // The desired angular velocity for one full rotation per second is 2 * Math.PI radians per second
+    var desiredRotationPerSecond = 2 * Math.PI; // full rotation in radians per second
+
+    // Calculate the proportional rotation rate
+    // If 320 pounds of force is needed for a 1000-pound object to rotate once per second,
+    // we can find the proportional rotation rate by considering the ratio of the given force to 320 pounds,
+    // and the given weight to 1000 pounds.
+    var baseWeight = 1000; // reference weight
+    var baseForce = 360; // reference force
+
+    // Scale the desired rotation rate by the ratio of force to weight
+    var scaledForce = force / baseForce; // how much the force differs from the reference
+    var scaledWeight = weight / baseWeight; // how much the weight differs from the reference
+
+    // Calculate the rotation rate considering both force and weight scaling
+    const rotationRatePerSecond = (scaledForce / scaledWeight) * desiredRotationPerSecond; // radians per second
+
+    // Convert to per frame rate
+    const rotationRatePerFrame = rotationRatePerSecond * (delta / 1000); // radians per frame
+
+    return rotationRatePerFrame;
+  }
+
+  getFullSpeedData() {
+    const thrust = this.actor.thrust; // force in pounds
+    const weight = this.actor.weight.effective; // weight in pounds
+    const maxSpeed = this.actor.maxSpeed; // max speed in whatever units you're using
+    const currentSpeed = this.getSpeed(); // current speed in whatever units you're using
+
+    // Calculate remaining acceleration needed to reach max speed
+    const remainingAcceleration = (maxSpeed - currentSpeed) / (thrust / weight); // seconds
+
+    // Distance to reach max speed (current velocity * time + 0.5 * acceleration * time^2)
+    const distanceToMaxSpeed = currentSpeed * remainingAcceleration + 0.5 * (thrust / weight) * Math.pow(remainingAcceleration, 2); // units
+
+    // Calculate coordinates for full speed
+    const angle = this.getVelocityRotation(); // assuming the thrust direction is aligned with current velocity
+    const fullSpeedX = this.actor.x + Math.cos(angle) * distanceToMaxSpeed;
+    const fullSpeedY = this.actor.y + Math.sin(angle) * distanceToMaxSpeed;
+
+    return { remainingAcceleration, distanceToMaxSpeed, fullSpeedX, fullSpeedY };
+}
+
+  getStopData() {
+    const brakingThrust = this.actor.brakingThrust; // braking force in pounds
+    const weight = this.actor.weight.effective; // weight in pounds
+    const currentSpeed = this.getSpeed(); // current speed in whatever units you're using
+
+    // Calculate deceleration (braking thrust / weight)
+    const deceleration = brakingThrust / weight; // units per second squared
+
+    // Time to stop (initial speed / deceleration)
+    const timeToStop = currentSpeed / deceleration; // seconds
+
+    // Distance to stop (0.5 * initial speed * time)
+    const distanceToStop = 0.5 * currentSpeed * timeToStop; // units
+
+    // Calculate coordinates for stopping
+    const angle = this.getVelocityRotation(); // direction of the current velocity
+    const stopX = this.actor.x + Math.cos(angle) * distanceToStop;
+    const stopY = this.actor.y + Math.sin(angle) * distanceToStop;
+
+    return { timeToStop, distanceToStop, stopX, stopY };
   }
 
   applyDeceleration() {
@@ -109,7 +185,6 @@ export class MovementComponent {
     this.setNeedsUpdate();
   }
   
-
   getVelocityRotation() {
     return Math.atan2(this.actor.velocity.y, this.actor.velocity.x);
   }
@@ -130,7 +205,7 @@ export class MovementComponent {
     return Math.sqrt(dx * dx + dy * dy);
   }
 
-  update() {
-    this.handleShipMovement();
+  update(delta) {
+    this.handleShipMovement(delta);
   }
 }

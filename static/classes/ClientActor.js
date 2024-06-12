@@ -2,6 +2,8 @@ import { MovementComponent } from '../shared/MovementComponent.js';
 import { Engine } from './Engine.js';
 import { log } from '../shared/helpers.js'
 
+const BRAKING_DISTANCE = 100;
+
 export class ClientActor extends Phaser.GameObjects.Sprite {
   constructor({ scene, x, y, texture, frame } = {}) {
     super(scene, x, y, texture, frame);
@@ -14,6 +16,7 @@ export class ClientActor extends Phaser.GameObjects.Sprite {
     this.body.setCollideWorldBounds(false);
 
     this.reticle = this.scene.add.graphics();
+    this.graphics = this.scene.add.graphics();
 
     this.hovered = false;
     this.selected = false;
@@ -26,14 +29,17 @@ export class ClientActor extends Phaser.GameObjects.Sprite {
       target: null,
       x: null,
       y: null,
+      shortestDistance: Infinity,
+      reachedTarget: false,
     };
 
-    this.thrust = 200;
+    this.thrust = 5;
     this.brakingThrust = this.thrust / 5;
+    this.rotationThrust = 360 // 360 is needed per 1000 effectiveWeight to turn once per second
     this.maxSpeed = 100;
     this.weight = {
-      base: 10000,
-      effective: 10000,
+      base: 1000,
+      effective: 1000,
     };
 
     this.inputStates = {
@@ -110,6 +116,25 @@ export class ClientActor extends Phaser.GameObjects.Sprite {
     );
   }
 
+  drawDots() {
+    return;
+    this.graphics.clear(); // Clear previous drawings
+
+    // Get full speed data
+    const { fullSpeedX, fullSpeedY } = this.movementComponent.getFullSpeedData();
+
+    // Get stop data
+    const { stopX, stopY } = this.movementComponent.getStopData();
+
+    // Draw green dot for full speed
+    this.graphics.fillStyle(0x00ff00, 1.0); // Green color
+    this.graphics.fillCircle(fullSpeedX, fullSpeedY, 5); // Draw a circle with radius 5
+
+    // Draw red dot for full stop
+    this.graphics.fillStyle(0xff0000, 1.0); // Red color
+    this.graphics.fillCircle(stopX, stopY, 5); // Draw a circle with radius 5
+}
+
   updateReticle() {
     if (this.hovered && !this.selected) {
       this.drawReticle(0x636262);
@@ -154,49 +179,83 @@ export class ClientActor extends Phaser.GameObjects.Sprite {
       target,
       x,
       y,
+      previousDistance: Infinity,
+      reachedTarget: false
     };
   }
+ 
+  handleAutopilot(delta) {
+    if (!this.autoPilotActive) return;
 
-  handleAutopilot() {
-    // Calculate distance and angle to target
-    const dx = this.autoPilotTarget.target.x - this.x;
-    const dy = this.autoPilotTarget.target.y - this.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    const angleToTarget = Math.atan2(dy, dx);
+    let targetX, targetY;
 
-    // Predict future position of the target (simple prediction)
-    const futureTargetX =
-      this.autoPilotTarget.target.x +
-      this.autoPilotTarget.target.velocity.x * 0.1;
-    const futureTargetY =
-      this.autoPilotTarget.target.y +
-      this.autoPilotTarget.target.velocity.y * 0.1;
-    const futureDx = futureTargetX - this.autoPilotTarget.target.x;
-    const futureDy = futureTargetY - this.autoPilotTarget.target.y;
-    const futureAngleToTarget = Math.atan2(futureDy, futureDx);
-
-    // Adjust heading towards future position of the target
-    const angleDiff = Phaser.Math.Angle.Wrap(
-      futureAngleToTarget - this.heading
-    );
-    if (angleDiff > 0.1) {
-      this.heading += 0.05; // Rotate right
-    } else if (angleDiff < -0.1) {
-      this.heading -= 0.05; // Rotate left
+    if (this.autoPilotTarget.target && this.autoPilotTarget.target instanceof ClientActor) {
+        targetX = this.autoPilotTarget.target.x;
+        targetY = this.autoPilotTarget.target.y;
+    } else if (this.autoPilotTarget.x !== null && this.autoPilotTarget.y !== null) {
+        targetX = this.autoPilotTarget.x;
+        targetY = this.autoPilotTarget.y;
+    } else {
+        return;
     }
 
-    // Move forward
-    this.velocity.x = Math.cos(this.heading) * this.speed;
-    this.velocity.y = Math.sin(this.heading) * this.speed;
+    const distance = this.movementComponent.distanceTo({ x: targetX, y: targetY });
+    const { targetAngle, rotationDiff } = this.movementComponent.getRotationDiff(targetX, targetY);
 
-    // Update position
-    this.x += this.velocity.x;
-    this.y += this.velocity.y;
+    let facingTarget = false;
 
-    // Update sprite rotation to match heading (pointing right by default)
-    this.rotation = this.heading;
-  }
+    const rotationRatePerFrame = this.movementComponent.getRotationRate(delta); // get rotation rate per frame
 
+    if (Math.abs(rotationDiff) > rotationRatePerFrame) {
+        if (rotationDiff > 0) {
+            this.rotateRight(true);
+        } else {
+            this.rotateLeft(true);
+        }
+    } else {
+        this.rotateRight(false);
+        this.rotateLeft(false);
+        this.rotation = targetAngle; // Snap to the exact angle when close
+        facingTarget = true;
+    }
+
+    // Don't thrust if we aren't facing the target
+    if (!facingTarget) return;
+
+    if (distance <= BRAKING_DISTANCE) {
+        this.setThrustForwardState(false);
+        this.brake(true);
+    }
+
+    if (distance > BRAKING_DISTANCE) {
+        this.setThrustForwardState(true);
+        this.brake(false);
+    }
+
+    if (distance <= 25) {
+        this.autoPilotTarget.reachedTarget = true;
+        log.debug("this.autoPilotTarget.reachedTarget to true")
+    }
+
+    let readyForAutoPilotDisengage = false;
+    if (this.autoPilotTarget.previousDistance !== Infinity 
+        && this.movementComponent.getSpeed() > 0 
+        && this.autoPilotTarget.reachedTarget) {
+        readyForAutoPilotDisengage = true;
+        log.debug("readyForAutoPilotDisengage set to true", this.movementComponent.getSpeed())
+    }
+
+    if (readyForAutoPilotDisengage && this.movementComponent.getSpeed() <= 0.25) {
+      this.autoPilotActive = false;
+      this.setThrustForwardState(false);
+      this.brake(false);
+      log.info("Autopilot Deactivated");
+    }
+
+    this.autoPilotTarget.previousDistance = distance;
+}
+
+  
   // handleAutoPilot() {
   //   let distance = 1000000000000000;
   //   let x = 0;
@@ -237,8 +296,9 @@ export class ClientActor extends Phaser.GameObjects.Sprite {
   update(deltaTime) {
     this.updateReticle();
     //this.movementComponent.updateStates(this.inputStates);
-    if (this.autoPilotActive) this.handleAutopilot();
+    if (this.autoPilotActive) this.handleAutopilot(deltaTime);
     this.movementComponent.update(deltaTime);
+    this.drawDots()
 
     this.engines.forEach((engine) => {
       engine.update();
