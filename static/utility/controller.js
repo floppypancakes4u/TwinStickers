@@ -21,7 +21,7 @@ export class Controller {
     // setInterval(() => {
     //   if (this.focusedEntity != null) this.followFocusedEntity();
     // }, 0);
-
+    this.scene.socket.emit("StartController")
    log.debug('Controller initialized'); 
   }
 

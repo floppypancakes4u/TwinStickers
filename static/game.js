@@ -321,7 +321,7 @@ class World extends Phaser.Scene {
       log.debug('Socket.io connection closed:', reason);
     });
 
-    log.debug('setupSockets called');
+    log.debug('Setup Sockets called');
   }
 
   shutdown() {

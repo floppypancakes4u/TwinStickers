@@ -19,8 +19,11 @@ export const ActorManagerServer = {
 
     io.on('connection', (socket) => {
       log.info(`Client connected:`, socket.id);
-      const playerController = new ServerPlayerController(socket, this);
-      this.playerControllers.set(socket.id, playerController);
+
+      socket.on('StartController', () => {        
+        const playerController = new ServerPlayerController(socket, this);
+        this.playerControllers.set(socket.id, playerController);
+      });
 
       socket.on('spawnActor', this.spawnActor);
 
