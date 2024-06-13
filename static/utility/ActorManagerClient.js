@@ -75,18 +75,23 @@ export const ActorManagerClient = {
 
   updateActor(data) {
     const { id, updateData, updateType } = data;
-    log.info(id, updateData, updateType)
     if (this.actors.has(id)) {
       const actor = this.actors.get(id);
-      if (this.controllerRef.playerEntity != actor) {
-        //Object.assign(actor, updateData);
-        actor.rotation = updateData.rotation
-        //console.log('did', actor.rotation);
-      } else {        
-        console.log('didnt');
+      if (this.controllerRef.playerEntity !== actor) {
+        if (updateType === "movement") {
+          if (updateData.x !== undefined) actor.x = updateData.x;
+          if (updateData.y !== undefined) actor.y = updateData.y;
+          if (updateData.velocity) {
+            if (updateData.velocity.x !== undefined) actor.velocity.x = updateData.velocity.x;
+            if (updateData.velocity.y !== undefined) actor.velocity.y = updateData.velocity.y;
+          }
+          if (updateData.rotation !== undefined) actor.rotation = updateData.rotation;
+        } else {
+          Object.assign(actor, updateData);
+        }
       }
     }
-  },
+  },  
 
   requestSpawnActor(x, y, texture, options, spawnOptions) {
     this.socket.emit('spawnActor', { x, y, texture, options, spawnOptions });

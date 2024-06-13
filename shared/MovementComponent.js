@@ -99,11 +99,13 @@ export class MovementComponent {
     
     this.actor.rotation -= this.getRotationRate(delta);
     this.addNetworkUpdate("rotation", this.actor.rotation);
+    log.debug("New Rotation", this.actor.rotation, delta)
   }
 
   rotateRight(delta) {
     this.actor.rotation += this.getRotationRate(delta);
     this.addNetworkUpdate("rotation", this.actor.rotation);
+    log.debug("New Rotation", this.actor.rotation)
   }
 
   getRotationRate(delta) {

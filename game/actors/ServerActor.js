@@ -87,84 +87,6 @@ export class ServerActor {
     }, 2000);
   }
 
-  // brake(pressed) {
-  //   this.inputStates.brake = pressed;
-  // }
-
-  // rotateLeft(pressed) {
-  //   this.inputStates.rotateLeft = pressed;
-  // }
-
-  // rotateRight(pressed) {
-  //   this.inputStates.rotateRight = pressed;
-  // }
-
-  // setAutopilotTarget({ target, x = null, y = null }) {
-  //   this.movementComponent.setAutopilotTarget({ target, x, y });
-  // }
-
-  // // setAutopilotTarget({ target, x = null, y = null }) {
-  // //   if (target instanceof ServerActor) {
-  // //     this.targetActor = target;
-  // //     this.autopilot = true;
-  // //     this.navigationTargetPos = { x: 0, y: 0 };
-  // //   } else if (x !== null && y !== null) {
-  // //     this.navigationTargetPos = { x, y };
-  // //     this.autopilot = true;
-  // //     this.targetActor = null;
-  // //   }
-  // // }
-
-  // disableAutopilot() {
-  //   this.movementComponent.disableAutopilot();
-  // }
-
-  // update(deltaTime) {
-  //   // if (this.autopilot) {
-  //   //   const distance = this.movementComponent.distanceTo({
-  //   //     x: this.navigationTargetPos.x,
-  //   //     y: this.navigationTargetPos.y,
-  //   //   });
-
-  //   //   let turningResult = this.movementComponent.turnTowardsTarget({
-  //   //     x: this.navigationTargetPos.x,
-  //   //     y: this.navigationTargetPos.y,
-  //   //     distance,
-  //   //   });
-
-  //   //   const { shouldThrust, shouldBrake } =
-  //   //     this.movementComponent.handleAccelerationToTarget({
-  //   //       x: this.navigationTargetPos.x,
-  //   //       y: this.navigationTargetPos.y,
-  //   //       distance,
-  //   //     });
-
-  //   //   if (shouldThrust) {
-  //   //     this.thrustForward(true);
-  //   //   }
-
-  //   //   if (shouldBrake) {
-  //   //     this.applyDeceleration();
-  //   //   }
-
-  //   //   if (turningResult.needsUpdate) {
-  //   //     this.updates.push({ rotation: this.rotation });
-  //   //     this.setNeedsUpdate();
-  //   //   }
-  //   // }
-
-  //   this.movementComponent.update();
-  // }
-
-  // setNeedsUpdate() {
-  //   this.needsUpdate = true;
-  // }
-
-  // destroy() {
-  //   // Add cleanup code here if needed
-  // }
-
-  
   prepForDestroy() {
     this.selected = false;
     this.reticle.clear();
@@ -226,8 +148,10 @@ export class ServerActor {
     if (Math.abs(rotationDiff) > rotationRatePerFrame) {
         if (rotationDiff > 0) {
             this.rotateRight(true);
+            //log.debug("rot right")
         } else {
             this.rotateLeft(true);
+            //log.debug("rot left")
         }
     } else {
         this.rotateRight(false);

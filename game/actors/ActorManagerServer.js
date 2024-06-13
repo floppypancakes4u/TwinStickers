@@ -39,8 +39,8 @@ export const ActorManagerServer = {
     const deltaTime = 0.016; // Approximate time between frames (60 FPS)
     setInterval(() => {
       this.update(deltaTime);
-    }, deltaTime * 1000); // 16ms for 60 FPS
-
+}, deltaTime * 1000); // 16ms for 60 FPS
+    
     // Log performance every second
     setInterval(() => {
       if (
@@ -52,11 +52,11 @@ export const ActorManagerServer = {
           this.performanceMeasurements.frameCount;
         const averageFPS = 1000 / averageTime;
         // console.log(
-        //   `Server Average Update Time: ${averageTime.toFixed(
-        //     2
+          //   `Server Average Update Time: ${averageTime.toFixed(
+            //     2
         //   )} ms, Average FPS: ${averageFPS.toFixed(2)}, Total Actors: ${
-        //     this.actors.size
-        //   }`
+            //     this.actors.size
+          //   }`
         // );
         this.performanceMeasurements.totalTime = 0;
         this.performanceMeasurements.frameCount = 0;
@@ -66,7 +66,7 @@ export const ActorManagerServer = {
 
   update(deltaTime) {
     const startTime = performance.now();
-
+    
     for (const actor of this.actors.values()) {
       actor.update(deltaTime);
 
