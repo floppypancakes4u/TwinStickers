@@ -73,7 +73,6 @@ export class Controller {
     });
 
     this.socket.on('actorSpawned', (data) => {
-      console.log("Controller got actorSpawned", data)
       if (data.id === this.socket.id) {
         this.playerEntity = ActorManagerClient.getActorByID(data.id);
         this.playerEntity.setController(this);

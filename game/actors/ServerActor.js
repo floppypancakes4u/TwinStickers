@@ -1,12 +1,7 @@
 import { MovementComponent } from '../../shared/MovementComponent.js';
 import { log } from '../../shared/helpers.js'
 
-const ROTATION_STEP = 0.1; // Step size for rotation adjustments
-const STOP_THRESHOLD = 5; // Distance threshold for stopping autopilot
-const DECELERATION_THRESHOLD = 50; // Distance threshold for deceleration
-const DECELERATION_FACTOR = 0.95; // Factor for deceleration
-const FULL_THRUST_FACTOR = 1;
-const MAX_SPEED = 50;
+const BRAKING_DISTANCE = 100;
 
 export class ServerActor {
   constructor({
@@ -84,7 +79,7 @@ export class ServerActor {
 
     setTimeout(() => {
       this.pickNewTarget();
-    }, 2000);
+    }, 5000);
   }
 
   prepForDestroy() {
@@ -95,9 +90,9 @@ export class ServerActor {
   setThrustForwardState(pressed) {
     this.inputStates.thrustForward = pressed;
 
-    this.engines.forEach((engine) => {
-      engine.SetThrusting(pressed);
-    });
+    // this.engines.forEach((engine) => {
+    //   engine.SetThrusting(pressed);
+    // });
   }
 
   brake(pressed) {
@@ -175,7 +170,7 @@ export class ServerActor {
 
     if (distance <= 25) {
         this.autoPilotTarget.reachedTarget = true;
-        log.debug("this.autoPilotTarget.reachedTarget to true")
+        //log.debug("this.autoPilotTarget.reachedTarget to true")
     }
 
     let readyForAutoPilotDisengage = false;
@@ -183,14 +178,14 @@ export class ServerActor {
         && this.movementComponent.getSpeed() > 0 
         && this.autoPilotTarget.reachedTarget) {
         readyForAutoPilotDisengage = true;
-        log.debug("readyForAutoPilotDisengage set to true", this.movementComponent.getSpeed())
+        //log.debug("readyForAutoPilotDisengage set to true", this.movementComponent.getSpeed())
     }
 
     if (readyForAutoPilotDisengage && this.movementComponent.getSpeed() <= 0.25) {
       this.autoPilotActive = false;
       this.setThrustForwardState(false);
       this.brake(false);
-      log.info("Autopilot Deactivated");
+      //log.info("Autopilot Deactivated");
     }
 
     this.autoPilotTarget.previousDistance = distance;

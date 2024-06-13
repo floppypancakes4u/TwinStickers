@@ -234,7 +234,7 @@ export class ClientActor extends Phaser.GameObjects.Sprite {
 
     if (distance <= 25) {
         this.autoPilotTarget.reachedTarget = true;
-        log.debug("this.autoPilotTarget.reachedTarget to true")
+        //log.debug("this.autoPilotTarget.reachedTarget to true")
     }
 
     let readyForAutoPilotDisengage = false;
@@ -242,14 +242,14 @@ export class ClientActor extends Phaser.GameObjects.Sprite {
         && this.movementComponent.getSpeed() > 0 
         && this.autoPilotTarget.reachedTarget) {
         readyForAutoPilotDisengage = true;
-        log.debug("readyForAutoPilotDisengage set to true", this.movementComponent.getSpeed())
+        //log.debug("readyForAutoPilotDisengage set to true", this.movementComponent.getSpeed())
     }
 
     if (readyForAutoPilotDisengage && this.movementComponent.getSpeed() <= 0.25) {
       this.autoPilotActive = false;
       this.setThrustForwardState(false);
       this.brake(false);
-      log.info("Autopilot Deactivated");
+      //log.info("Autopilot Deactivated");
     }
 
     this.autoPilotTarget.previousDistance = distance;

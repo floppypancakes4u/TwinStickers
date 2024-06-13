@@ -36,10 +36,10 @@ export const ActorManagerServer = {
       });
     });
 
-    const deltaTime = 0.016; // Approximate time between frames (60 FPS)
+    const deltaTime = 0.016 * 1000; // Approximate time between frames (60 FPS)
     setInterval(() => {
       this.update(deltaTime);
-}, deltaTime * 1000); // 16ms for 60 FPS
+}, deltaTime); // 16ms for 60 FPS
     
     // Log performance every second
     setInterval(() => {
@@ -157,7 +157,7 @@ export const ActorManagerServer = {
       case "movement":
         const updateData = actor.movementComponent.getAndClearUpdates()
 
-        log.debug("updateData", { id: actor.id, updateData, updateType })
+        //log.debug("updateData", { id: actor.id, updateData, updateType })
         this.io.emit('actorUpdated', { id: actor.id, updateData, updateType });
         break;
       default:
