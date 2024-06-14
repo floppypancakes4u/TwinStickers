@@ -14,13 +14,19 @@ class World extends Phaser.Scene {
 
     this.load.setBaseURL('https://labs.phaser.io');
 
-    this.load.image('sky', 'assets/skies/space3.png');
-    this.load.image('logo', 'assets/sprites/phaser3-logo.png');
-    this.load.image('red', 'assets/particles/red.png');
-    this.load.image('blue', 'assets/particles/blue.png');
-    this.load.image('background', 'assets/tests/space/nebula.jpg');
-    this.load.image('stars', 'assets/tests/space/stars.png');
-    this.load.image('ship', 'assets/sprites/x2kship.png');
+    // this.load.image('sky', 'assets/skies/space3.png');
+    // this.load.image('logo', 'assets/sprites/phaser3-logo.png');
+    // this.load.image('red', 'assets/particles/red.png');
+    // this.load.image('blue', 'assets/particles/blue.png');
+    // this.load.image('background', 'assets/tests/space/nebula.jpg');
+    // this.load.image('stars', 'assets/tests/space/stars.png');
+    // this.load.image('ship', 'assets/sprites/x2kship.png');
+
+    
+    this.load.setBaseURL('https://twinstickers-mgwe--3000--9e2d28a3.local-credentialless.webcontainer.io/');
+    this.load.image('ship', 'static/assets/x2kship.png');
+    this.load.image('dev_mining_turret', 'static/assets/turret_02_mk1.png');
+    this.load.image('dev_mining_turret_beam', 'static/assets/turret_02_beam_01_anim.gif');
   }
 
   create() {
