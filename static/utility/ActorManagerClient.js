@@ -68,17 +68,28 @@ export const ActorManagerClient = {
   },
 
   spawnActor(data) {
-    const { id, x, y, texture } = data;
+    const { id, classType, x, y, texture } = data;
+    //log.debug("SpawnActor data:", { id, classType, x, y, texture })
     if (!this.actors.has(id)) {
-      //console.log('spawning actor', { id, x, y, texture });
-      const actor = new ClientActor({ scene: this.scene, x, y, texture });
+      let actor = null;
+      switch (classType) {
+        case "ClientActor":
+          actor = new ClientActor({ scene: this.scene, x, y, texture });
+          break;
+        case "ClientAsteroid":
+          actor = new ClientAsteroid({scene: this.scene, x, y})
+          break;
+      
+        default:
+          break;
+      }
+
       actor.id = id;
       this.actors.set(id, actor);
 
       // If this is the player's actor, set it as the player entity and focus the camera
       if (id === this.socket.id) {
         this.scene.controller.playerEntity = actor;
-        //this.scene.controller.camera.follow(actor);
       }
     }
   },

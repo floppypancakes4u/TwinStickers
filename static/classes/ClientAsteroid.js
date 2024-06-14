@@ -86,7 +86,9 @@ export class ClientAsteroid extends Phaser.GameObjects.Container {
     }
 
     getBounds() {
+        log.debug("getBounds called")
         let { centerX, centerY, radius } = this.getShapeBounds();
+        log.debug('deboug sent: ', { centerX, centerY, radius })
         return { x: centerX, y: centerY, width: radius, height: radius }
     }
     
@@ -115,5 +117,9 @@ export class ClientAsteroid extends Phaser.GameObjects.Container {
     // Method to get the shape data for serialization
     getShapeData() {
         return this.shapeData;
+    }
+
+    update(deltaTime) {
+        this.InteractionComponent.update(deltaTime);
     }
 }

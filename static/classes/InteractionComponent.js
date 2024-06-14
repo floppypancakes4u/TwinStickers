@@ -1,4 +1,4 @@
-import { log } from '../../shared/helpers.js';
+//import { log } from '../../shared/helpers.js';
 import { ActorManagerClient } from '../utility/ActorManagerClient.js';
 
 export class InteractionComponent {
@@ -26,6 +26,7 @@ export class InteractionComponent {
   }
 
   drawReticle(color) {
+    console.log("drawReticle called")
     const { x, y, width, height } = this.actor.getBounds();
     console.log({ x, y, width, height })
     const cornerSize = 5;

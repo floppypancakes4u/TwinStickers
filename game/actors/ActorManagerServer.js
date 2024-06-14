@@ -1,5 +1,6 @@
 import { ServerPlayerController } from '../utility/ServerPlayerController.js';
 import { ServerActor } from './ServerActor.js';
+import { ServerAsteroid } from './ServerAsteroid.js'
 import { performance } from 'perf_hooks';
 import { log } from '../../shared/helpers.js';
 import crypto, { randomUUID } from 'crypto';
@@ -97,18 +98,22 @@ export const ActorManagerServer = {
 
     //log.debug('spawn data', spawnOptions);
 
+    log.debug("spawningActor on manager:", data)
+
     if (spawnOptions?.qty > 0) {
       for (let i = 0; i < spawnOptions.qty; i++) {
         const actorId = data.id || randomUUID();
 
         const actorData = {
           id: actorId,
+          classType: data.classType,
           x: data.x,
           y: data.y,
           texture: data.texture,
           options: data.options,
         };
         const newActor = new ServerActor(actorData);
+
 
         ActorManagerServer.actors.set(actorId, newActor);
         ActorManagerServer.io.emit('actorSpawned', actorData);
@@ -122,6 +127,7 @@ export const ActorManagerServer = {
 
       const actorData = {
         id: actorId,
+        classType: data.classType,
         x: data.x,
         y: data.y,
         texture: data.texture,
