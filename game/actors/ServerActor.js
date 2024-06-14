@@ -24,19 +24,6 @@ export class ServerActor extends FlightActorBase {
     this.controller = controller;
   }
 
-  pickNewTarget() {
-    const randomOffsetX = Math.random() * 400 - 200;
-    const randomOffsetY = Math.random() * 400 - 200;
-    const targetX = this.x + randomOffsetX;
-    const targetY = this.y + randomOffsetY;
-
-    this.setAutopilotTarget({ x: targetX, y: targetY });
-
-    setTimeout(() => {
-      this.pickNewTarget();
-    }, 5000);
-  }
-
   update(deltaTime) {
     super.update(deltaTime);
     if (this.autoPilotActive) this.handleAutopilot(deltaTime);

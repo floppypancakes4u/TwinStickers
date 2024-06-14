@@ -83,6 +83,19 @@ export class FlightActorBase extends ReplicatedActorBase {
     log.debug(`FlightActorBase Spawned. ID: ${this.id}`)
   }
 
+  pickNewTarget() {
+    const randomOffsetX = Math.random() * 400 - 200;
+    const randomOffsetY = Math.random() * 400 - 200;
+    const targetX = this.x + randomOffsetX;
+    const targetY = this.y + randomOffsetY;
+
+    this.setAutopilotTarget({ x: targetX, y: targetY });
+
+    setTimeout(() => {
+      this.pickNewTarget();
+    }, 5000);
+  }
+
   setAutopilotTarget({ target = null, x = null, y = null }) {
     this.autoPilotActive = true;
     this.autoPilotTarget = {
