@@ -177,7 +177,7 @@ export const ActorManagerServer = {
         break;
     
       case "movement":
-        const updateData = actor.movementComponent.getAndClearUpdates()
+        const updateData = actor.MovementComponent.getAndClearUpdates()
 
         //log.debug("updateData", { id: actor.id, updateData, updateType })
         this.io.emit('actorUpdated', { id: actor.id, updateData, updateType });

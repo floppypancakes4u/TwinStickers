@@ -13,7 +13,8 @@ export class MovementComponent {
   }
 
   handleShipMovement(delta) {
-    this.actor.rotation %= Math.PI * 2;
+    this.actor.setRotation(this.actor.rotation %= Math.PI * 2)
+    //this.actor.rotation %= Math.PI * 2;
   
     if (
       this.actor.inputStates.thrustForward &&
@@ -64,18 +65,6 @@ export class MovementComponent {
     });
   }
 
-  // applyForce(amt, effectiveWeight) {
-  //   const forceX = Math.cos(this.actor.rotation);
-  //   const forceY = Math.sin(this.actor.rotation);
-
-  //   const acceleration = amt / effectiveWeight;
-
-  //   this.actor.velocity.x += forceX * acceleration;
-  //   this.actor.velocity.y += forceY * acceleration;
-
-  //   this.limitSpeed();
-  // }
-
   limitSpeed() {
     const currentSpeed = this.getSpeed();
     if (currentSpeed > this.actor.maxSpeed) {
@@ -94,15 +83,14 @@ export class MovementComponent {
     return { targetAngle, rotationDiff };
   }
 
-  rotateLeft(delta) {
-    //this.actor.rotation -= .5;
-    
-    this.actor.rotation -= this.getRotationRate(delta);
+  rotateLeft(delta) {    
+    this.actor.setRotation(this.actor.rotation -= this.getRotationRate(delta))
     this.addNetworkUpdate("rotation", this.actor.rotation);
   }
 
   rotateRight(delta) {
-    this.actor.rotation += this.getRotationRate(delta);
+    //this.actor.rotation += this.getRotationRate(delta);
+    this.actor.setRotation(this.actor.rotation += this.getRotationRate(delta))
     this.addNetworkUpdate("rotation", this.actor.rotation);
   }
 
@@ -202,6 +190,7 @@ export class MovementComponent {
   }
 
   addNetworkUpdate(k, v) {
+    //if (k == "rotation") console.log(k, v, this.actor)
     this.updates[k] = v;
     this.needsUpdate = true;
   }
