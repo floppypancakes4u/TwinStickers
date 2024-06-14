@@ -2,6 +2,12 @@ import { log } from '../shared/helpers.js';
 import { ClientActor } from '../classes/ClientActor.js';
 import { ClientAsteroid } from '../classes/ClientAsteroid.js';
 
+// Create a lookup object
+const classMap = {
+  "ClientActor": ClientActor,
+  "ClientAsteroid": ClientAsteroid,
+};
+
 export const ActorManagerClient = {
   socket: null,
   scene: null,
@@ -68,21 +74,29 @@ export const ActorManagerClient = {
   },
 
   spawnActor(data) {
-    const { id, classType, x, y, texture } = data;
-    //log.debug("SpawnActor data:", { id, classType, x, y, texture })
+    const { id, clientClassType, x, y, texture } = data;
+    log.debug("SpawnActor data:", data)
     if (!this.actors.has(id)) {
-      let actor = null;
-      switch (classType) {
-        case "ClientActor":
-          actor = new ClientActor({ scene: this.scene, x, y, texture });
-          break;
-        case "ClientAsteroid":
-          actor = new ClientAsteroid({scene: this.scene, x, y})
-          break;
-      
-        default:
-          break;
+      let actor = null;        //log.debug("starting new actor")
+
+      const ClassReference = classMap[clientClassType];
+      if (ClassReference) {
+        actor = new ClassReference({scene: this.scene, x, y, texture});
+      } else {
+        throw new Error(`Class ${clientClassType} does not exist.`);
       }
+
+      // switch (clientClassType) {
+      //   case "ClientActor":
+      //     actor = new ClientActor({ scene: this.scene, x, y, texture });
+      //     break;
+      //   case "ClientAsteroid":
+      //     actor = new ClientAsteroid({scene: this.scene, x, y})
+      //     break;
+      
+      //   default:
+      //     break;
+      // }
 
       actor.id = id;
       this.actors.set(id, actor);
@@ -131,7 +145,7 @@ export const ActorManagerClient = {
   },  
 
   requestSpawnActor(x, y, texture, options, spawnOptions) {
-    this.socket.emit('spawnActor', { x, y, texture, options, spawnOptions });
+    this.socket.emit('spawnActor', { x, y, serverClassType: "ServerActor", clientClassType: "ClientActor", texture, options, spawnOptions });
     //console.log('requested server spawn', { x, y, texture, options });
   },
 

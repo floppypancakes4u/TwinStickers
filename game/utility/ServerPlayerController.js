@@ -20,7 +20,8 @@ export class ServerPlayerController {
     const initialPosition = { x: 100, y: 100 }; // Or some logic to determine spawn position
     const actorData = {
       id: this.socket.id,
-      classType: "ClientActor",
+      serverClassType: "ServerActor",
+      clientClassType: "ClientActor",
       x: initialPosition.x,
       y: initialPosition.y,
       texture: 'ship', // Adjust as needed

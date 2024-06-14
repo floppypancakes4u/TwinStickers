@@ -3,7 +3,13 @@ import { ServerActor } from './ServerActor.js';
 import { ServerAsteroid } from './ServerAsteroid.js'
 import { performance } from 'perf_hooks';
 import { log } from '../../shared/helpers.js';
-import crypto, { randomUUID } from 'crypto';
+import { randomUUID } from 'crypto';
+
+// Create a lookup object
+const classMap = {
+  "ServerActor": ServerActor,
+  "ServerAsteroid": ServerAsteroid,
+};
 
 export const ActorManagerServer = {
   io: null,
@@ -98,50 +104,60 @@ export const ActorManagerServer = {
 
     //log.debug('spawn data', spawnOptions);
 
-    log.debug("spawningActor on manager:", data)
+    //log.debug("spawningActor on manager:", data)
 
-    if (spawnOptions?.qty > 0) {
-      for (let i = 0; i < spawnOptions.qty; i++) {
+    const qty = spawnOptions?.qty || 1
+
+      for (let i = 0; i < qty; i++) {
         const actorId = data.id || randomUUID();
 
         const actorData = {
           id: actorId,
-          classType: data.classType,
+          clientClassType: data.clientClassType,
           x: data.x,
           y: data.y,
           texture: data.texture,
           options: data.options,
         };
-        const newActor = new ServerActor(actorData);
+        let newActor;
+        //log.debug("starting new actor")
 
+        const ClassReference = classMap[data.serverClassType];
+        if (ClassReference) {
+            newActor = new ClassReference(actorData);
+        } else {
+            throw new Error(`Class ${data.serverClassType} does not exist.`);
+        }
+
+        //log.debug("newActor", newActor)
 
         ActorManagerServer.actors.set(actorId, newActor);
         ActorManagerServer.io.emit('actorSpawned', actorData);
 
         spawnedActors.push(newActor);
 
-        //console.log('spawning', actorData);
+        log.debug('actorSpawned', actorData);
       }
-    } else {
-      const actorId = data.id || randomUUID();
+    // } else {
+    //   const actorId = data.id || randomUUID();
 
-      const actorData = {
-        id: actorId,
-        classType: data.classType,
-        x: data.x,
-        y: data.y,
-        texture: data.texture,
-        options: data.options,
-      };
+    //   const actorData = {
+    //     id: actorId,
+    //     classType: data.classType,
+    //     x: data.x,
+    //     y: data.y,
+    //     texture: data.texture,
+    //     options: data.options,
+    //   };
 
-      const newActor = new ServerActor(actorData);
+    //   const newActor = new ServerActor(actorData);
 
-      spawnedActors.push(newActor);
-      ActorManagerServer.actors.set(actorId, newActor);
-      ActorManagerServer.io.emit('actorSpawned', actorData);
-    }
+    //   spawnedActors.push(newActor);
+    //   ActorManagerServer.actors.set(actorId, newActor);
+    //   ActorManagerServer.io.emit('actorSpawned', actorData);
+    // }
 
-    return spawnedActors;
+    // return spawnedActors;
   },
 
   deleteActor(socket, data) {
