@@ -141,8 +141,10 @@ class World extends Phaser.Scene {
 
       if (intersects) {
         actor.update(delta);
+        actor.setVisiblity(true)
       } else {
         culledActorsCount++;
+        actor.setVisiblity(false)
         //log(`Culling actor: ${actor.id}`);
       }
     }

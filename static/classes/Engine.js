@@ -41,6 +41,12 @@ export class Engine {
     // this.emitter.startFollow(this.actor);
   }
 
+  setVisibility(state) {
+    //if (state) {
+      this.emitter.setVisible(state)
+    //}
+  }
+
   SetThrusting(state) {
     this.isThrusting = state;
 

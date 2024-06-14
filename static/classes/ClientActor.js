@@ -1,5 +1,6 @@
 import { MovementComponent } from '../shared/MovementComponent.js';
 import { Engine } from './Engine.js';
+import { ActorManagerClient } from '../utility/ActorManagerClient.js';
 import { log } from '../shared/helpers.js'
 
 const BRAKING_DISTANCE = 100;
@@ -60,14 +61,14 @@ export class ClientActor extends Phaser.GameObjects.Sprite {
 
     this.on('pointerover', () => {
       this.hovered = true;
-      this.controller.setHoveredEntity(this);
+      ActorManagerClient.setHoveredEntity(this);
     });
 
     this.on('pointerout', () => {
       this.hovered = false;
       if (!this.selected) {
         this.reticle.clear();
-        this.controller.setHoveredEntity(null);
+        ActorManagerClient.setHoveredEntity(this);
       }
     });
 
@@ -158,6 +159,14 @@ export class ClientActor extends Phaser.GameObjects.Sprite {
 
     this.engines.forEach((engine) => {
       engine.SetThrusting(pressed);
+    });
+  }
+
+  setVisiblity(state) {
+    this.setVisible(state);
+
+    this.engines.forEach((engine) => {
+      engine.setVisibility(state);
     });
   }
 

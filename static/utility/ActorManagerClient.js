@@ -1,5 +1,6 @@
 import { log } from '../shared/helpers.js';
 import { ClientActor } from '../classes/ClientActor.js';
+//import { ClientAsteroid } from '../classes/ClientAsteroid.js';
 
 export const ActorManagerClient = {
   socket: null,
@@ -8,7 +9,7 @@ export const ActorManagerClient = {
   controllerRef: null,
 
   init(scene) {
-    log.debug('Init ActorManagerClient');
+    console.log('Init ActorManagerClient');
     this.socket = scene.socket;
     this.scene = scene;
 
@@ -28,10 +29,39 @@ export const ActorManagerClient = {
     // setInterval(() => {
     //   this.update(deltaTime);
     // }, deltaTime * 1000); // 16ms for 60 FPS
+
+    
+    log.info("doing")
+    ActorManagerClient.createAsteroidField(scene, 100, 100, 600, 400, 50);
+    log.info("done")
+    // for (let index = 0; index < 25; index++) {
+    //   const x = (Math.random(1) * 25) * 15 + 150
+    //   const y = (Math.random(1) * 25) * 15 + 150
+
+      
+    //   new ClientAsteroid({scene: this.scene, x, y})
+    // }
+  },
+
+  createAsteroidField(scene, x, y, width, height, count) {
+    for (let i = 0; i < count; i++) {
+        const asteroidX = Phaser.Math.Between(x, x + width);
+        const asteroidY = Phaser.Math.Between(y, y + height);
+        //const asteroid = new ClientAsteroid(scene, asteroidX, asteroidY);
+        log.debug({scene, asteroidX, asteroidY})
+        //scene.asteroids.add(asteroid);
+    }
   },
 
   setController(controller) {
     this.controllerRef = controller;
+  },
+
+  
+  setHoveredEntity(actor) {
+    if (this.controllerRef) {
+      this.controllerRef.setHoveredEntity(actor)
+    }
   },
 
   getActorByID(id) {
