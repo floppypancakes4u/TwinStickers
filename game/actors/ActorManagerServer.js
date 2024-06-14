@@ -137,7 +137,7 @@ export const ActorManagerServer = {
 
         spawnedActors.push(newActor);
 
-        log.debug('actorSpawned', actorData);
+        //log.debug('actorSpawned', newActor.getClientSpawnData());
       }
     // } else {
     //   const actorId = data.id || randomUUID();

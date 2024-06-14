@@ -8,8 +8,6 @@ const classMap = {
   "ClientAsteroid": ClientAsteroid,
 };
 
-var roids = [];
-
 export const ActorManagerClient = {
   socket: null,
   scene: null,
@@ -33,17 +31,17 @@ export const ActorManagerClient = {
       this.updateActor(data);
     });
        
-    ActorManagerClient.createAsteroidField(scene, 100, 100, 600, 400, 50);
+    //ActorManagerClient.createAsteroidField(scene, 100, 100, 600, 400, 50);
   },
 
-  createAsteroidField(scene, x, y, width, height, count) {
-    for (let i = 0; i < count; i++) {
-        const asteroidX = Phaser.Math.Between(x, x + width);
-        const asteroidY = Phaser.Math.Between(y, y + height);
-        const asteroid = new ClientAsteroid({scene, x: asteroidX, y: asteroidY});
-        roids.push(asteroid);
-    }
-  },
+  // createAsteroidField(scene, x, y, width, height, count) {
+  //   for (let i = 0; i < count; i++) {
+  //       const asteroidX = Phaser.Math.Between(x, x + width);
+  //       const asteroidY = Phaser.Math.Between(y, y + height);
+  //       const asteroid = new ClientAsteroid({scene, x: asteroidX, y: asteroidY});
+  //       roids.push(asteroid);
+  //   }
+  // },
 
   setController(controller) {
     this.controllerRef = controller;
@@ -67,7 +65,7 @@ export const ActorManagerClient = {
 
   spawnActor(data) {
     const { id, x, y, velocity, rotation, className, classData } = data;
-    log.debug("SpawnActor data:", { id, x, y, velocity, rotation, className, classData })
+    //console.log("SpawnActor data:", { id, x, y, velocity, rotation, className, classData })
     if (!this.actors.has(id)) {
       let actor = null;        //log.debug("starting new actor")
 

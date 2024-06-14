@@ -27,48 +27,52 @@ export class InteractionComponent {
     });
   }
 
-  drawReticle(color) {
-    //console.log("drawReticle called")
+  drawReticle(color, multiplier = 2) {
     const { x, y, width, height } = this.actor.getBounds();
-    //console.log({ x, y, width, height })
     const cornerSize = 5;
+
+    const adjustedWidth = width * multiplier;
+    const adjustedHeight = height * multiplier;
+    const adjustedX = x - (adjustedWidth - width) / 2;
+    const adjustedY = y - (adjustedHeight - height) / 2;
 
     this.reticle.clear();
     this.reticle.lineStyle(2, color, 1);
-    this.reticle.strokeLineShape(new Phaser.Geom.Line(x, y, x + cornerSize, y));
-    this.reticle.strokeLineShape(new Phaser.Geom.Line(x, y, x, y + cornerSize));
+    this.reticle.strokeLineShape(new Phaser.Geom.Line(adjustedX, adjustedY, adjustedX + cornerSize, adjustedY));
+    this.reticle.strokeLineShape(new Phaser.Geom.Line(adjustedX, adjustedY, adjustedX, adjustedY + cornerSize));
     this.reticle.strokeLineShape(
-      new Phaser.Geom.Line(x + width, y, x + width - cornerSize, y)
+      new Phaser.Geom.Line(adjustedX + adjustedWidth, adjustedY, adjustedX + adjustedWidth - cornerSize, adjustedY)
     );
     this.reticle.strokeLineShape(
-      new Phaser.Geom.Line(x + width, y, x + width, y + cornerSize)
+      new Phaser.Geom.Line(adjustedX + adjustedWidth, adjustedY, adjustedX + adjustedWidth, adjustedY + cornerSize)
     );
     this.reticle.strokeLineShape(
-      new Phaser.Geom.Line(x, y + height, x + cornerSize, y + height)
+      new Phaser.Geom.Line(adjustedX, adjustedY + adjustedHeight, adjustedX + cornerSize, adjustedY + adjustedHeight)
     );
     this.reticle.strokeLineShape(
-      new Phaser.Geom.Line(x, y + height, x, y + height - cornerSize)
+      new Phaser.Geom.Line(adjustedX, adjustedY + adjustedHeight, adjustedX, adjustedY + adjustedHeight - cornerSize)
     );
     this.reticle.strokeLineShape(
       new Phaser.Geom.Line(
-        x + width,
-        y + height,
-        x + width - cornerSize,
-        y + height
+        adjustedX + adjustedWidth,
+        adjustedY + adjustedHeight,
+        adjustedX + adjustedWidth - cornerSize,
+        adjustedY + adjustedHeight
       )
     );
     this.reticle.strokeLineShape(
       new Phaser.Geom.Line(
-        x + width,
-        y + height,
-        x + width,
-        y + height - cornerSize
+        adjustedX + adjustedWidth,
+        adjustedY + adjustedHeight,
+        adjustedX + adjustedWidth,
+        adjustedY + adjustedHeight - cornerSize
       )
     );
-  }
+}
+
 
   updateReticle() {
-    console.log(this.actorHovered, this.actorSelected)
+    //console.log("updateReticle", this.actorHovered, this.actorSelected)
     if (this.actorHovered && !this.actorSelected) {
       console.log("should draw ret hover")
       this.drawReticle(0x636262);
