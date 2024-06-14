@@ -113,7 +113,7 @@ export class Controller {
 
   setHoveredEntity(ActorInstance) {
     this.hoveredEntity = ActorInstance;
-    console.log('this hovered entity');
+    console.log('this hovered entity', ActorInstance.constructor.name);
   }
 
   // followFocusedEntity() {

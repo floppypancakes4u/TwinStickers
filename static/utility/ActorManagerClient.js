@@ -62,8 +62,11 @@ export const ActorManagerClient = {
 
   
   setHoveredEntity(actor) {
+    log.debug(1)
     if (this.controllerRef) {
+      log.debug(2)
       this.controllerRef.setHoveredEntity(actor)
+      log.debug(3)
     }
   },
 
