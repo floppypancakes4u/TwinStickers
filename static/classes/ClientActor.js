@@ -1,6 +1,6 @@
 import { MovementComponent } from '../shared/MovementComponent.js';
+import { InteractionComponent } from './InteractionComponent.js';
 import { Engine } from './Engine.js';
-import { ActorManagerClient } from '../utility/ActorManagerClient.js';
 import { log } from '../shared/helpers.js'
 
 const BRAKING_DISTANCE = 100;
@@ -16,7 +16,6 @@ export class ClientActor extends Phaser.GameObjects.Sprite {
     this.scene.physics.world.enable(this);
     this.body.setCollideWorldBounds(false);
 
-    this.reticle = this.scene.add.graphics();
     this.graphics = this.scene.add.graphics();
 
     this.hovered = false;
@@ -54,67 +53,17 @@ export class ClientActor extends Phaser.GameObjects.Sprite {
     this.controller = null;
 
     this.movementComponent = new MovementComponent({ actor: this });
+    this.InteractionComponent = new InteractionComponent({actor: this})
     this.engines = [
       new Engine({ scene, actor: this, x: -22, y: -6.5 }),
       new Engine({ scene, actor: this, x: -22, y: 6.5 }),
     ];
-
-    this.on('pointerover', () => {
-      this.hovered = true;
-      ActorManagerClient.setHoveredEntity(this);
-    });
-
-    this.on('pointerout', () => {
-      this.hovered = false;
-      if (!this.selected) {
-        this.reticle.clear();
-        ActorManagerClient.setHoveredEntity(this);
-      }
-    });
 
     //log.debug("Created Client Ship Actor", this)
   }
 
   setController(controller) {
     this.controller = controller;
-  }
-
-  drawReticle(color) {
-    const { x, y, width, height } = this.getBounds();
-    const cornerSize = 5;
-
-    this.reticle.clear();
-    this.reticle.lineStyle(2, color, 1);
-    this.reticle.strokeLineShape(new Phaser.Geom.Line(x, y, x + cornerSize, y));
-    this.reticle.strokeLineShape(new Phaser.Geom.Line(x, y, x, y + cornerSize));
-    this.reticle.strokeLineShape(
-      new Phaser.Geom.Line(x + width, y, x + width - cornerSize, y)
-    );
-    this.reticle.strokeLineShape(
-      new Phaser.Geom.Line(x + width, y, x + width, y + cornerSize)
-    );
-    this.reticle.strokeLineShape(
-      new Phaser.Geom.Line(x, y + height, x + cornerSize, y + height)
-    );
-    this.reticle.strokeLineShape(
-      new Phaser.Geom.Line(x, y + height, x, y + height - cornerSize)
-    );
-    this.reticle.strokeLineShape(
-      new Phaser.Geom.Line(
-        x + width,
-        y + height,
-        x + width - cornerSize,
-        y + height
-      )
-    );
-    this.reticle.strokeLineShape(
-      new Phaser.Geom.Line(
-        x + width,
-        y + height,
-        x + width,
-        y + height - cornerSize
-      )
-    );
   }
 
   drawDots() {
@@ -136,22 +85,9 @@ export class ClientActor extends Phaser.GameObjects.Sprite {
     this.graphics.fillCircle(stopX, stopY, 5); // Draw a circle with radius 5
 }
 
-  updateReticle() {
-    if (this.hovered && !this.selected) {
-      this.drawReticle(0x636262);
-      return;
-    }
-
-    if (this.selected) {
-      this.drawReticle(0xffffff);
-    } else {
-      this.reticle.clear();
-    }
-  }
-
   prepForDestroy() {
     this.selected = false;
-    this.reticle.clear();
+    this.InteractionComponent.destroy();
   }
 
   setThrustForwardState(pressed) {
@@ -303,10 +239,10 @@ export class ClientActor extends Phaser.GameObjects.Sprite {
   }
 
   update(deltaTime) {
-    this.updateReticle();
     //this.movementComponent.updateStates(this.inputStates);
     if (this.autoPilotActive) this.handleAutopilot(deltaTime);
     this.movementComponent.update(deltaTime);
+    this.InteractionComponent.update(deltaTime);
     this.drawDots()
 
     this.engines.forEach((engine) => {

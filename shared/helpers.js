@@ -80,6 +80,11 @@ export const log = {
     }
 };
 
+export function rgbToHex(r, g, b) {
+    return (r << 16) | (g << 8) | b;
+}
+
+
 // Example usage
 // log.debug(`This is a ${log.colorize('debug message', 'blue')}`);
 // log.info(`This is an ${log.colorize('info message', 'green')}`);

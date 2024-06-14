@@ -1,6 +1,6 @@
 import { log } from '../shared/helpers.js';
 import { ClientActor } from '../classes/ClientActor.js';
-//import { ClientAsteroid } from '../classes/ClientAsteroid.js';
+import { ClientAsteroid } from '../classes/ClientAsteroid.js';
 
 export const ActorManagerClient = {
   socket: null,
@@ -31,9 +31,8 @@ export const ActorManagerClient = {
     // }, deltaTime * 1000); // 16ms for 60 FPS
 
     
-    log.info("doing")
     ActorManagerClient.createAsteroidField(scene, 100, 100, 600, 400, 50);
-    log.info("done")
+    log.info("done", scene)
     // for (let index = 0; index < 25; index++) {
     //   const x = (Math.random(1) * 25) * 15 + 150
     //   const y = (Math.random(1) * 25) * 15 + 150
@@ -47,9 +46,7 @@ export const ActorManagerClient = {
     for (let i = 0; i < count; i++) {
         const asteroidX = Phaser.Math.Between(x, x + width);
         const asteroidY = Phaser.Math.Between(y, y + height);
-        //const asteroid = new ClientAsteroid(scene, asteroidX, asteroidY);
-        log.debug({scene, asteroidX, asteroidY})
-        //scene.asteroids.add(asteroid);
+        const asteroid = new ClientAsteroid({scene, x: asteroidX, y: asteroidY});
     }
   },
 
