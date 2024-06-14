@@ -13,13 +13,29 @@ export class ReplicatedActorBase {
     this.velocity = { x: 0, y: 0 };
     this.rotation = 0;
 
+    this.clientClassName = "";
+
     this.needsUpdate = false; // Flag for network update
     this.needsMovementUpdate = false;
     this.updates = [];
 
+    this.classData = {}
+
     this.MovementComponent = new MovementComponent({ actor: this });
     
     log.debug(`ReplicatedActorBase Spawned. ID: ${this.id}`)
+  }
+
+  getClientSpawnData() {
+    return {
+      id: this.id,
+      x: this.x,
+      y: this.y,
+      velocity: this.velocity,
+      rotation: this.rotation,
+      className: this.clientClassName,
+      classData: this.classData
+    }
   }
 
   prepForDestroy() {

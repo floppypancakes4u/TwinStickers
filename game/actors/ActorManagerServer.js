@@ -118,6 +118,7 @@ export const ActorManagerServer = {
           y: data.y,
           texture: data.texture,
           options: data.options,
+          classData: {},
         };
         let newActor;
         //log.debug("starting new actor")
@@ -132,7 +133,7 @@ export const ActorManagerServer = {
         //log.debug("newActor", newActor)
 
         ActorManagerServer.actors.set(actorId, newActor);
-        ActorManagerServer.io.emit('actorSpawned', actorData);
+        ActorManagerServer.io.emit('actorSpawned', newActor.getClientSpawnData());
 
         spawnedActors.push(newActor);
 

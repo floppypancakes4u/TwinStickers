@@ -6,7 +6,6 @@ export class ServerActor extends FlightActorBase {
     id,
     x = 0,
     y = 0,
-    texture = 'none...oh fuck why is it none?!',
     options = {
       roam: false,
     },
@@ -14,8 +13,11 @@ export class ServerActor extends FlightActorBase {
     super({id, x, y, options})   
 
     this.controller = null;
-
-    this.texture = texture; 
+    this.clientClassName = "ClientActor"
+    this.classData = {
+      texture: 'ship',
+    }
+    //this.texture = texture; 
 
     log.debug(`ServerActor Spawned. ID: ${this.id}`)
   }

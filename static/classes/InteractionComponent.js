@@ -1,5 +1,5 @@
 //import { log } from '../../shared/helpers.js';
-import { log } from '../../shared/helpers.js';
+import { log } from '../shared/helpers.js';
 import { ActorManagerClient } from '../utility/ActorManagerClient.js';
 
 export class InteractionComponent {
@@ -13,24 +13,24 @@ export class InteractionComponent {
     this.reticle = this.scene.add.graphics();
 
     this.actor.on('pointerover', () => {
-      log.debug("pointerover this:", this)
-        this.actorHovered = true;
-        ActorManagerClient.setHoveredEntity(this.actor);
+      //log.debug("pointerover this:", this)
+      this.actorHovered = true;
+      ActorManagerClient.setHoveredEntity(this.actor);
     });
 
     this.actor.on('pointerout', () => {
-        this.actorHovered = false;
-        if (!this.actorSelected) {
-            this.reticle.clear();
-            ActorManagerClient.setHoveredEntity(this.actor);
-        }
+      this.actorHovered = false;
+      if (!this.actorSelected) {
+        this.reticle.clear();
+        ActorManagerClient.setHoveredEntity(this.actor);
+      }
     });
   }
 
   drawReticle(color) {
-    console.log("drawReticle called")
+    //console.log("drawReticle called")
     const { x, y, width, height } = this.actor.getBounds();
-    console.log({ x, y, width, height })
+    //console.log({ x, y, width, height })
     const cornerSize = 5;
 
     this.reticle.clear();
@@ -68,6 +68,7 @@ export class InteractionComponent {
   }
 
   updateReticle() {
+    console.log(this.actorHovered, this.actorSelected)
     if (this.actorHovered && !this.actorSelected) {
       console.log("should draw ret hover")
       this.drawReticle(0x636262);

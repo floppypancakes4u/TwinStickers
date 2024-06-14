@@ -30,11 +30,16 @@ export class ServerPlayerController {
       },
     };
 
-    //log("calling this.actorManager.spawnActor(actorData)", actorData)
     this.actor = this.actorManager.spawnActor(actorData);
-    //this.actorManager.actors.set(this.socket.id, this.actor);
 
-    //this.actorManager.io.emit('actorSpawned', actorData);
+    // Spawn a test roid for us
+    const roidData = {
+      x: 75,
+      y: 75,
+      serverClassType: "ServerAsteroid",
+      clientClassType: "ClientAsteroid",
+    }
+    this.roid = this.actorManager.spawnActor(roidData);
   }
 
   handlePlayerInput(data) {

@@ -6,8 +6,8 @@ import { log } from '../shared/helpers.js'
 const BRAKING_DISTANCE = 100;
 
 export class ClientActor extends Phaser.GameObjects.Sprite {
-  constructor({ scene, x, y, texture, frame } = {}) {
-    super(scene, x, y, texture, frame);
+  constructor({ scene, x, y, velocity, rotation, className, classData } = {}) {
+    super(scene, x, y, classData.texture, '');
 
     this.scene = scene;
     scene.add.existing(this);

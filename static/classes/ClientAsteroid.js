@@ -3,7 +3,7 @@ import { InteractionComponent } from './InteractionComponent.js';
 import { log, rgbToHex } from '../shared/helpers.js'
 
 export class ClientAsteroid extends Phaser.GameObjects.Container {
-    constructor({ scene, x, y, shapeData = null }) {
+    constructor({ scene, x, y, velocity, rotation, className, classData }) {
         super(scene, x, y, '');
         this.scene = scene;
         this.setPosition(x, y);
@@ -13,8 +13,9 @@ export class ClientAsteroid extends Phaser.GameObjects.Container {
         this.graphics = this.scene.add.graphics({ x: 0, y: 0 });
         this.add(this.graphics)
 
-        if (shapeData) {
-            this.createAsteroidShapeFromData(shapeData);
+        log.debug("asteroid classData", classData)
+        if (classData.shapeData) {
+            this.createAsteroidShapeFromData(classData.shapeData);
         } else {
             this.createAsteroidShape();
         }

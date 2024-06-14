@@ -8,6 +8,8 @@ const classMap = {
   "ClientAsteroid": ClientAsteroid,
 };
 
+var roids = [];
+
 export const ActorManagerClient = {
   socket: null,
   scene: null,
@@ -30,22 +32,8 @@ export const ActorManagerClient = {
     this.socket.on('actorUpdated', (data) => {
       this.updateActor(data);
     });
-
-    // const deltaTime = 0.016; // Approximate time between frames (60 FPS)
-    // setInterval(() => {
-    //   this.update(deltaTime);
-    // }, deltaTime * 1000); // 16ms for 60 FPS
-
-    
+       
     ActorManagerClient.createAsteroidField(scene, 100, 100, 600, 400, 50);
-    log.info("done", scene)
-    // for (let index = 0; index < 25; index++) {
-    //   const x = (Math.random(1) * 25) * 15 + 150
-    //   const y = (Math.random(1) * 25) * 15 + 150
-
-      
-    //   new ClientAsteroid({scene: this.scene, x, y})
-    // }
   },
 
   createAsteroidField(scene, x, y, width, height, count) {
@@ -53,6 +41,7 @@ export const ActorManagerClient = {
         const asteroidX = Phaser.Math.Between(x, x + width);
         const asteroidY = Phaser.Math.Between(y, y + height);
         const asteroid = new ClientAsteroid({scene, x: asteroidX, y: asteroidY});
+        roids.push(asteroid);
     }
   },
 
@@ -77,29 +66,17 @@ export const ActorManagerClient = {
   },
 
   spawnActor(data) {
-    const { id, clientClassType, x, y, texture } = data;
-    log.debug("SpawnActor data:", data)
+    const { id, x, y, velocity, rotation, className, classData } = data;
+    log.debug("SpawnActor data:", { id, x, y, velocity, rotation, className, classData })
     if (!this.actors.has(id)) {
       let actor = null;        //log.debug("starting new actor")
 
-      const ClassReference = classMap[clientClassType];
+      const ClassReference = classMap[className];
       if (ClassReference) {
-        actor = new ClassReference({scene: this.scene, x, y, texture});
+        actor = new ClassReference({scene: this.scene, x, y, velocity, rotation, className, classData});
       } else {
-        throw new Error(`Class ${clientClassType} does not exist.`);
+        throw new Error(`Class ${className} does not exist.`);
       }
-
-      // switch (clientClassType) {
-      //   case "ClientActor":
-      //     actor = new ClientActor({ scene: this.scene, x, y, texture });
-      //     break;
-      //   case "ClientAsteroid":
-      //     actor = new ClientAsteroid({scene: this.scene, x, y})
-      //     break;
-      
-      //   default:
-      //     break;
-      // }
 
       actor.id = id;
       this.actors.set(id, actor);

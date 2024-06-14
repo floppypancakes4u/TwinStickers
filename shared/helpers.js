@@ -84,6 +84,13 @@ export function rgbToHex(r, g, b) {
     return (r << 16) | (g << 8) | b;
 }
 
+export function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+export function degToRad(degrees) {
+    return degrees * (Math.PI / 180);
+}
 
 // Example usage
 // log.debug(`This is a ${log.colorize('debug message', 'blue')}`);

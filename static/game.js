@@ -143,7 +143,7 @@ class World extends Phaser.Scene {
         camBounds
       );
 
-      //log(`Actor: ${actor.id}, Bounds: ${JSON.stringify(actorBounds)}, Intersects: ${intersects}`);
+      //console.log(`Actor: ${actor.id} ${actor.constructor.name}, Bounds: ${JSON.stringify(actorBounds)}, Intersects: ${intersects}`);
 
       if (intersects) {
         actor.update(delta);
