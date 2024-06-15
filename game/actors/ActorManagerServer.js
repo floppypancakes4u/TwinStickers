@@ -30,6 +30,8 @@ export const ActorManagerServer = {
       socket.on('StartController', () => {        
         const playerController = new ServerPlayerController(socket, this);
         this.playerControllers.set(socket.id, playerController);
+
+        this.sendWorldToSocket(socket);
       });
 
       socket.on('spawnActor', this.spawnActor);
@@ -159,6 +161,14 @@ export const ActorManagerServer = {
     // }
 
     // return spawnedActors;
+  },
+
+  sendWorldToSocket(socket) {
+    for (const actor of this.actors.values()) {
+      let actorSpawnData = actor.getClientSpawnData();
+      
+      socket.emit('actorSpawned', actor.getClientSpawnData());
+    }
   },
 
   deleteActor(socket, data) {

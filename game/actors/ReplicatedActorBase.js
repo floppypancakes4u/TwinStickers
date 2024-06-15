@@ -46,6 +46,7 @@ export class ReplicatedActorBase {
           id: this.id,
           x: this.x,
           y: this.y,
+          rotation: this.rotation,
           velocity: this.velocity,
           rotation: this.rotation,
           className: this.clientClassName,

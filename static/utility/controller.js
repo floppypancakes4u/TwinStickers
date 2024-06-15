@@ -13,16 +13,8 @@ export class Controller {
 
     this.setupInputListeners();
 
-    // const deltaTime = 0.016; // Approximate time between frames (60 FPS)
-    // setInterval(() => {
-    //   this.update(deltaTime);
-    // }, deltaTime * 1000); // 16ms for 60 FPS
-
-    // setInterval(() => {
-    //   if (this.focusedEntity != null) this.followFocusedEntity();
-    // }, 0);
     this.scene.socket.emit("StartController")
-   log.debug('Controller initialized'); 
+    log.info('Controller initialized'); 
   }
 
   setupInputListeners() {

@@ -29,6 +29,7 @@ export class BaseActor extends Phaser.GameObjects.Container {
         this.needsUpdate = false;
         this.needsMovementUpdate = false;
         this.updates = [];
+		this.movementUpdates = {}
 
         this.movementComponent = new MovementComponent({
             actor: this
@@ -66,8 +67,10 @@ export class BaseActor extends Phaser.GameObjects.Container {
     }
 
     update(deltaTime) {
-        this.movementComponent.update(deltaTime);
         this.InteractionComponent.update(deltaTime);
+        this.movementComponent.update(deltaTime);
+
+		if (this.movementComponent.needsUpdate) this.movementUpdates = this.movementComponent.getAndClearUpdates();
     }
 }
 
