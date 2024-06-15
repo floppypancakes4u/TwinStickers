@@ -1,71 +1,23 @@
+import { BaseActor } from './BaseActor.js';
 import { MovementComponent } from '../shared/MovementComponent.js';
 import { InteractionComponent } from './InteractionComponent.js';
 import { log, rgbToHex } from '../shared/helpers.js'
 
-export class ClientAsteroid extends Phaser.GameObjects.Container {
+export class ClientAsteroid extends BaseActor {
     constructor({ scene, x, y, velocity, rotation, className, classData = {} }) {
-        super(scene, x, y, '');
-        this.scene = scene;
-        this.setPosition(x, y);
-        this.scene.add.existing(this);
-        //this.classData = classData;
-
-        scene.physics.world.enable(this);
+        super({scene, x, y});
 
         this.graphics = this.scene.add.graphics({ x: 0, y: 0 });
         this.add(this.graphics)
 
-        //log.debug("asteroid classData", {scene, x, y, velocity, rotation, className, classData})
-        if (classData.shapeData) {
-            this.createAsteroidShapeFromData(classData.shapeData, classData.color);
-            //log.debug("Generated Asteroid from Server Data!")
-        } else {
-            this.createAsteroidShape();
-        }
+        this.createAsteroidShapeFromData(classData.shapeData, classData.color);
         
-        let { centerX, centerY, radius } = this.getShapeBounds()
-        this.setSize(radius, radius); // Set size for interaction
-        this.setInteractive();
-
-        this.setBounds();
+        //let { centerX, centerY, radius } = this.getShapeBounds()
+        // this.setSize(radius, radius); // Set size for interaction
+        
+        this.refreshSize();
         this.setRotation();
-        this.InteractionComponent = new InteractionComponent({ actor: this })
-        //log.info("Asteroid Ready!")
     }
-
-    // Method to create a random asteroid shape
-    // createAsteroidShape({ min = 7, max = 15, radius = 20, variation = 5 } = {}) {
-    //     this.shapeData = {
-    //         points: [],
-    //         color: null
-    //     };
-
-    //     const points = Phaser.Math.Between(min, max); // Number of points (vertices)
-    //     this.shapeData.pointsCount = points;
-
-    //     const minShade = 25;
-    //     const shadeRange = 50;
-    //     const grayShade = minShade + Math.floor(Math.random() * shadeRange);
-    //     const color = rgbToHex(grayShade, grayShade, grayShade);
-    //     this.shapeData.color = color;
-
-    //     this.graphics.fillStyle(color, 1.0); // Fill color
-    //     this.graphics.beginPath();
-    //     for (let i = 0; i < points; i++) {
-    //         const angle = Phaser.Math.DegToRad((360 / points) * i);
-    //         const distance = radius + Phaser.Math.Between(-variation, variation);
-    //         const x = Math.cos(angle) * distance;
-    //         const y = Math.sin(angle) * distance;
-    //         this.shapeData.points.push({ x, y });
-    //         if (i === 0) {
-    //             this.graphics.moveTo(x, y);
-    //         } else {
-    //             this.graphics.lineTo(x, y);
-    //         }
-    //     }
-    //     this.graphics.closePath();
-    //     this.graphics.fillPath();
-    // }
 
     // Method to create an asteroid shape from data
     createAsteroidShapeFromData(shapeData, color) {
@@ -83,9 +35,9 @@ export class ClientAsteroid extends Phaser.GameObjects.Container {
         this.graphics.fillPath();
     }
 
-    setVisiblity(state) {
-        this.setVisible(state);
-    }
+    // setVisiblity(state) {
+    //     this.setVisible(state);
+    // }
 
     // Method to set the physics body bounds
     setBounds() {
