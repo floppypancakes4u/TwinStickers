@@ -10,8 +10,6 @@ export class ServerAsteroid extends ReplicatedActorBase {
       color: this.generateAsteroidColor(),
       shapeData: this.createAsteroidShape(),
     }
-
-    console.log("ROID: ", this)
   }    
 
   generateAsteroidColor() {

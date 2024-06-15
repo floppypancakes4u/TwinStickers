@@ -90,7 +90,7 @@ export const ActorManagerClient = {
     const { id } = data;
     if (this.actors.has(id)) {
       const actor = this.actors.get(id);
-      actor.prepForDestroy();
+      actor.preDestroy();
       actor.destroy();
       this.actors.delete(id);
     }

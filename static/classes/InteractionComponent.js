@@ -27,7 +27,7 @@ export class InteractionComponent {
     });
   }
 
-  drawReticle(color, multiplier = 2) {
+  drawReticle(color, multiplier = 1) {
     const { x, y, width, height } = this.actor.getBounds();
     const cornerSize = 5;
 
@@ -86,7 +86,7 @@ export class InteractionComponent {
     }
   }
 
-  destroy() {
+  delete() {
     this.reticle.clear();
   }
 

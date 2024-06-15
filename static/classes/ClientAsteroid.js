@@ -15,10 +15,10 @@ export class ClientAsteroid extends Phaser.GameObjects.Container {
         this.graphics = this.scene.add.graphics({ x: 0, y: 0 });
         this.add(this.graphics)
 
-        log.debug("asteroid classData", {scene, x, y, velocity, rotation, className, classData})
+        //log.debug("asteroid classData", {scene, x, y, velocity, rotation, className, classData})
         if (classData.shapeData) {
             this.createAsteroidShapeFromData(classData.shapeData, classData.color);
-            log.debug("Generated Asteroid from Server Data!")
+            //log.debug("Generated Asteroid from Server Data!")
         } else {
             this.createAsteroidShape();
         }
@@ -30,7 +30,7 @@ export class ClientAsteroid extends Phaser.GameObjects.Container {
         this.setBounds();
         this.setRotation();
         this.InteractionComponent = new InteractionComponent({ actor: this })
-        log.info("Asteroid Ready!")
+        //log.info("Asteroid Ready!")
     }
 
     // Method to create a random asteroid shape

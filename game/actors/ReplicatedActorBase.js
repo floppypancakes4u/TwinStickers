@@ -15,7 +15,7 @@ export class ReplicatedActorBase {
 
     this.clientClassName = "";
 
-    this.needsUpdate = false; // Flag for network update
+    this.needsUpdate = false;
     this.needsMovementUpdate = false;
     this.updates = [];
 
@@ -38,7 +38,7 @@ export class ReplicatedActorBase {
     }
   }
 
-  prepForDestroy() {
+  preDestroy() {
     this.selected = false;
     this.reticle.clear();
   }
