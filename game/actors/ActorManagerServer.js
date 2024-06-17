@@ -27,13 +27,34 @@ export const ActorManagerServer = {
     io.on('connection', (socket) => {
       log.info(`Client connected:`, socket.id);
 
-      socket.on('StartController', () => {        
+      socket.on('StartController', function(cb) {        
         const playerController = new ServerPlayerController(socket, this);
-        this.playerControllers.set(socket.id, playerController);
+        ActorManagerServer.playerControllers.set(socket.id, playerController);
 
-        this.sendWorldToSocket(socket);
+        const actorData = {
+          //id: this.socket.id,
+          serverClassType: "ServerActor",
+          clientClassType: "ClientActor",
+          x: 0,
+          y: 0,
+          texture: 'ship', // Adjust as needed
+          options: {
+            roam: false,
+          },
+        };
+    
+        let playerActor = ActorManagerServer.spawnActor(actorData);
+        playerActor.setController(playerController);
+        playerController.setPlayerActor(playerActor);
+
+        ActorManagerServer.sendWorldToSocket(socket);
+
+        cb(playerActor.id)
       });
 
+      socket.on('applyPlayerUpdate', (data) => {
+        this.applyActorUpdateFromClient(data, socket)
+      })
       socket.on('spawnActor', this.spawnActor);
 
       socket.on('disconnect', () => {
@@ -79,8 +100,11 @@ export const ActorManagerServer = {
     for (const actor of this.actors.values()) {
       actor.update(deltaTime);
 
-      if (actor.needsUpdate) this.updateActor(actor);
-      if (actor.needsMovementUpdate) this.updateActor(actor, "movement");
+      //if (actor.needsUpdate) this.updateActor(actor);
+      if (actor.needsMovementUpdate) {
+        this.updateActor(actor, "movement");
+        actor.clearUpdates(true);
+      }
     }
 
     const endTime = performance.now();
@@ -108,9 +132,9 @@ export const ActorManagerServer = {
 
     //log.debug("spawningActor on manager:", data)
 
-    const qty = spawnOptions?.qty || 1
+    //const qty = spawnOptions?.qty || 1
 
-      for (let i = 0; i < qty; i++) {
+      //for (let i = 0; i < qty; i++) {
         const actorId = data.id || randomUUID();
 
         const actorData = {
@@ -137,10 +161,14 @@ export const ActorManagerServer = {
         ActorManagerServer.actors.set(actorId, newActor);
         ActorManagerServer.io.emit('actorSpawned', newActor.getClientSpawnData());
 
-        spawnedActors.push(newActor);
+        //spawnedActors.push(newActor);
+
+        //log.info("Spawned new Actor with ID of", log.colorize(actorId, 'blue'))
+
+        return newActor
 
         //log.debug('actorSpawned', newActor.getClientSpawnData());
-      }
+      //}
     // } else {
     //   const actorId = data.id || randomUUID();
 
@@ -179,9 +207,20 @@ export const ActorManagerServer = {
     }
   },
 
-  updateActor(actor, updateType = "general") {
-    //log.debug("updateActor", {actor, updateType})
+  // Todo: this method needs checks for cheating. way down the road.
+  applyActorUpdateFromClient(data, socket) {
+    if (ActorManagerServer.playerControllers.has(socket.id)) {
+      let socketsPlayerController = ActorManagerServer.playerControllers.get(socket.id);
 
+      //log.debug("got ", data, " from ", socket.id, socketsPlayerController.actor)
+      
+      if (data.movement) socketsPlayerController.actor.setMovementUpdateFromClient(data.movement)
+
+      //log.debug(socketsPlayerController.actor.MovementComponent.needsUpdate)
+    }
+  },
+
+  updateActor(actor, updateType = "general") {
     switch (updateType) {
       case "general":
         
@@ -189,9 +228,20 @@ export const ActorManagerServer = {
     
       case "movement":
         const updateData = actor.MovementComponent.getAndClearUpdates()
+        const socket = actor?.controller?.socket
+
+        // Most actors won't have a socket. If they do, it's likely player controlled, so we need
+        // to send it to everyone else, but not the sender.
+        // Otherwise, broadcast the actor updates to everyone.
+        if (socket) {
+          log.debug("Sent", { id: actor.id, updateData, updateType })
+          socket.broadcast.emit('actorUpdated', { id: actor.id, updateData, updateType });
+        } else {
+          //this.io.emit('actorUpdated', { id: actor.id, updateData, updateType });
+        }
 
         //log.debug("updateData", { id: actor.id, updateData, updateType })
-        this.io.emit('actorUpdated', { id: actor.id, updateData, updateType });
+        
         break;
       default:
         break;

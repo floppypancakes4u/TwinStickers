@@ -34,17 +34,9 @@ export const ActorManagerClient = {
     //ActorManagerClient.createAsteroidField(scene, 100, 100, 600, 400, 50);
   },
 
-  // createAsteroidField(scene, x, y, width, height, count) {
-  //   for (let i = 0; i < count; i++) {
-  //       const asteroidX = Phaser.Math.Between(x, x + width);
-  //       const asteroidY = Phaser.Math.Between(y, y + height);
-  //       const asteroid = new ClientAsteroid({scene, x: asteroidX, y: asteroidY});
-  //       roids.push(asteroid);
-  //   }
-  // },
-
   setController(controller) {
     this.controllerRef = controller;
+    //log.debug("ActorManagerClient setController to", controller)
   },
 
   
@@ -77,9 +69,11 @@ export const ActorManagerClient = {
       this.actors.set(id, actor);
 
       // If this is the player's actor, set it as the player entity and focus the camera
-      if (id === this.socket.id) {
-        this.scene.controller.playerEntity = actor;
-      }
+      // if (id === this.socket.id) {
+      //   this.scene.controller.playerEntity = actor;
+      // }      
+
+      log.info(`Spawned new Actor with ID of ${log.colorize(id, 'blue')}`)
     }
   },
 
@@ -101,17 +95,26 @@ export const ActorManagerClient = {
 
   updateActor(data) {
     const { id, updateData, updateType } = data;
+    log.info("updateActor", id, updateData, updateType)
     if (this.actors.has(id)) {
       const actor = this.actors.get(id);
+      //log.debug("id:", id, this.controllerRef.playerEntity === actor, this.controllerRef.playerEntity)
+      //log.debug({ id, updateData, updateType })
+      //Object.assign(actor, updateData);
+
+      //return;
       if (this.controllerRef.playerEntity !== actor) {
         if (updateType === "movement") {
-          if (updateData.x !== undefined) actor.x = updateData.x;
-          if (updateData.y !== undefined) actor.y = updateData.y;
-          if (updateData.velocity) {
-            if (updateData.velocity.x !== undefined) actor.velocity.x = updateData.velocity.x;
-            if (updateData.velocity.y !== undefined) actor.velocity.y = updateData.velocity.y;
-          }
-          if (updateData.rotation !== undefined) actor.rotation = updateData.rotation;
+
+          actor.movementComponent.applyNetworkMovementUpdate(updateData)
+
+          // if (updateData.x !== undefined) actor.x = updateData.x;
+          // if (updateData.y !== undefined) actor.y = updateData.y;
+          // if (updateData.velocity) {
+          //   if (updateData.velocity.x !== undefined) actor.velocity.x = updateData.velocity.x;
+          //   if (updateData.velocity.y !== undefined) actor.velocity.y = updateData.velocity.y;
+          // }
+          // if (updateData.rotation !== undefined) actor.rotation = updateData.rotation;
         } else {
           Object.assign(actor, updateData);
         }
@@ -127,4 +130,8 @@ export const ActorManagerClient = {
   requestDeleteActor(id) {
     this.socket.emit('deleteActor', { id });
   },
+
+  sendUpdate(updateData) {
+    this.socket.emit('applyPlayerUpdate', updateData)
+  }
 };

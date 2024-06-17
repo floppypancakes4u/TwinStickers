@@ -19,7 +19,7 @@ export class ServerActor extends FlightActorBase {
     }
     //this.texture = texture; 
 
-    log.debug(`ServerActor Spawned. ID: ${this.id}`)
+    //log.debug(`ServerActor Spawned. ID: ${this.id}`)
   }
 
   setController(controller) {

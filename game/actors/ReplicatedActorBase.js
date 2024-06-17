@@ -30,7 +30,6 @@ export class ReplicatedActorBase {
 
       this.needsUpdate = false;
       this.needsMovementUpdate = false;
-      this.updates = [];
 
       this.classData = {}
 
@@ -38,7 +37,22 @@ export class ReplicatedActorBase {
           actor: this
       });
 
-      log.debug(`ReplicatedActorBase Spawned. ID: ${this.id}`)
+      //log.debug(`ReplicatedActorBase Spawned. ID: ${this.id}`)
+  }
+
+  clearUpdates(movementOnly = false) {
+    if (movementOnly) {
+        this.needsMovementUpdate = false;
+        return;
+    }
+
+    this.needsUpdate = false;
+  }
+
+  setMovementUpdateFromClient(data) {
+    Object.assign(this, data);
+    //this.needsMovementUpdate = true; // Not needed. MovementComponent update will
+    // detect changes and automatically mark them for needing network update
   }
 
   getClientSpawnData() {
@@ -123,7 +137,7 @@ export class FlightActorBase extends ReplicatedActorBase {
       // Roaming role
       if (this.spawnOptions.roam) this.pickNewTarget();
 
-      log.debug(`FlightActorBase Spawned. ID: ${this.id}`)
+      //log.debug(`FlightActorBase Spawned. ID: ${this.id}`)
   }
 
   pickNewTarget() {

@@ -1,12 +1,7 @@
-import {
-    MovementComponent
-} from '../shared/MovementComponent.js';
-import {
-    InteractionComponent
-} from './InteractionComponent.js';
-import {
-    log
-} from '../shared/helpers.js'
+import {MovementComponent} from '../shared/MovementComponent.js';
+import {InteractionComponent} from './InteractionComponent.js';
+import {log} from '../shared/helpers.js'
+import { ActorManagerClient } from '../utility/ActorManagerClient.js';
 
 export class BaseActor extends Phaser.GameObjects.Container {
     constructor({ scene, x, y} = {}) {
@@ -38,7 +33,7 @@ export class BaseActor extends Phaser.GameObjects.Container {
             actor: this
         })
 
-        log.debug("BaseActor spawned")
+        //log.debug("BaseActor spawned")
     }
 
     refreshSize() {
@@ -70,7 +65,12 @@ export class BaseActor extends Phaser.GameObjects.Container {
         this.InteractionComponent.update(deltaTime);
         this.movementComponent.update(deltaTime);
 
-		if (this.movementComponent.needsUpdate) this.movementUpdates = this.movementComponent.getAndClearUpdates();
+		if (this.movementComponent.needsUpdate) {
+			this.movementUpdates = this.movementComponent.getAndClearUpdates();
+			//log.info("Movement update", this.movementUpdates)
+
+			ActorManagerClient.sendUpdate({movement: this.movementUpdates})
+		}
     }
 }
 
@@ -109,7 +109,7 @@ export class FlightBaseActor extends BaseActor {
 			space: false,
 		};
         
-        log.debug("FlightBaseActor spawned")
+        //log.debug("FlightBaseActor spawned")
     }
 
 	setThrustForwardState(pressed) {

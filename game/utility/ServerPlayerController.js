@@ -13,13 +13,18 @@ export class ServerPlayerController {
     });
 
     // When a client connects, spawn an actor for them
-    this.spawnActor();
+    //this.spawnActor();
+  }
+
+  setPlayerActor(actor) {
+    this.actor = actor;
+    //log.debug("Set player actor to", actor)
   }
 
   spawnActor() {
     const initialPosition = { x: 100, y: 100 }; // Or some logic to determine spawn position
     const actorData = {
-      id: this.socket.id,
+      //id: this.socket.id,
       serverClassType: "ServerActor",
       clientClassType: "ClientActor",
       x: initialPosition.x,
@@ -31,6 +36,7 @@ export class ServerPlayerController {
     };
 
     this.actor = this.actorManager.spawnActor(actorData);
+    this.actor.setController(this);
 
     // Spawn a test roid for us
     const roidData = {
@@ -42,25 +48,7 @@ export class ServerPlayerController {
     this.roid = this.actorManager.spawnActor(roidData);
   }
 
-  handlePlayerInput(data) {
-    // if (this.actor) {
-    //   if (data.action === 'move') {
-    //     this.actor.x += data.x;
-    //     this.actor.y += data.y;
-    //     this.actor.rotation = data.rotation || this.actor.rotation;
-    //     this.actor.velocity = data.velocity || this.actor.velocity;
-    //     this.actor.isThrusting = data.thrust || false;
-    //     this.actor.setNeedsUpdate();
-    //   }
-    // }
-  }
-
-  // updateActor() {
-  //   if (this.actor) {
-  //     this.actor.update(0.016); // Assume 60 FPS for deltaTime
-  //     this.actorManager.io.emit('actorUpdated', this.actor);
-  //   }
-  // }
+  handlePlayerInput(data) {}
 
   destroy() {
     if (this.actor) {

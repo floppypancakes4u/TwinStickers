@@ -22,7 +22,7 @@ export class ClientActor extends FlightBaseActor {
       new Engine({ scene, actor: this, x: -22, y: 6.5 }),
     ];
 
-    log.debug("ClientActor Created")
+    //log.debug("ClientActor Created")
   }
 
   setController(controller) {

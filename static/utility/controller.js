@@ -13,7 +13,7 @@ export class Controller {
 
     this.setupInputListeners();
 
-    this.scene.socket.emit("StartController")
+    this.scene.socket.emit("StartController", (ShipID) => this.playerSpawned(ShipID))
     log.info('Controller initialized'); 
   }
 
@@ -64,13 +64,40 @@ export class Controller {
       }
     });
 
-    this.socket.on('actorSpawned', (data) => {
-      if (data.id === this.socket.id) {
-        this.playerEntity = ActorManagerClient.getActorByID(data.id);
-        this.playerEntity.setController(this);
-        this.focusedEntity = this.playerEntity;
-      }
-    });
+    // this.socket.on('actorSpawned', (data) => {
+    //   // if (data.id === this.socket.id) {
+    //   //   this.playerEntity = ActorManagerClient.getActorByID(data.id);
+    //   //   this.playerEntity.setController(this);
+    //   //   this.focusedEntity = this.playerEntity;
+    //   // }
+    // });
+  }
+
+  setPlayerActor(actor, ShipID) {
+    this.playerEntity = actor;
+    log.info("Controller took authority over", ShipID)
+  }
+
+  playerSpawned(ShipID) {
+    if (ActorManagerClient.actors.has(ShipID)) {
+      let actor = ActorManagerClient.actors.get(ShipID);
+
+      this.setPlayerActor(actor, ShipID);
+
+      this.focusedEntity = this.playerEntity;
+      this.playerEntity.setController(this);
+
+      console.log({      
+        playerEntity: this.playerEntity,
+        hoveredEntity: this.hoveredEntity,
+        focusedEntity: this.focusedEntity,
+      })
+
+      
+    } else {
+      log.critical("Player spawned, but the ShipID wasn't found in the existing actors! ShipID: ", ShipID)
+    }
+
   }
 
   handleRightClick(pointer) {
@@ -144,6 +171,12 @@ export class Controller {
   }
 
   update(deltaTime) {
+    // console.log({      
+    //   playerEntity: this.playerEntity,
+    //   hoveredEntity: this.hoveredEntity,
+    //   focusedEntity: this.focusedEntity,
+    // })
+    //console.log("updating", this.playerEntity)
     if (this.playerEntity) {
       if (this.focusedEntity != null) this.followFocusedEntity();
       // Update the playerEntity's state based on inputStates if necessary
