@@ -69,7 +69,7 @@ export class BaseActor extends Phaser.GameObjects.Container {
 			this.movementUpdates = this.movementComponent.getAndClearUpdates();
 			//log.info("Movement update", this.movementUpdates)
 
-			ActorManagerClient.sendUpdate({movement: this.movementUpdates})
+			ActorManagerClient.sendUpdate({actor: this, movement: this.movementUpdates})
 		}
     }
 }

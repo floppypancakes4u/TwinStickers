@@ -95,7 +95,7 @@ export const ActorManagerClient = {
 
   updateActor(data) {
     const { id, updateData, updateType } = data;
-    log.info("updateActor", id, updateData, updateType)
+    //log.info("updateActor", id, updateData, updateType)
     if (this.actors.has(id)) {
       const actor = this.actors.get(id);
       //log.debug("id:", id, this.controllerRef.playerEntity === actor, this.controllerRef.playerEntity)
@@ -116,7 +116,7 @@ export const ActorManagerClient = {
           // }
           // if (updateData.rotation !== undefined) actor.rotation = updateData.rotation;
         } else {
-          Object.assign(actor, updateData);
+          //Object.assign(actor, updateData);
         }
       }
     }
@@ -132,6 +132,7 @@ export const ActorManagerClient = {
   },
 
   sendUpdate(updateData) {
-    this.socket.emit('applyPlayerUpdate', updateData)
+    //if (updateData.actor == this.controllerRef.playerEntity)
+      this.socket.emit('applyPlayerUpdate', updateData)
   }
 };

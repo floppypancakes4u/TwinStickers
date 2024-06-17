@@ -50,6 +50,22 @@ export class ReplicatedActorBase {
   }
 
   setMovementUpdateFromClient(data) {
+
+    //log.debug("setmovementUpdate for", data)
+
+    // let parsedData = {}
+    // for (const [key, value] of Object.entries(data)) {
+    //     let floated = 0;
+
+    //     if (key != "velocity") {
+    //         floated = parseFloat(value.toFixed(2))
+    //         log.debug("floated:", floated)
+    //         parsedData[key] = floated
+    //     }        
+    // }
+
+    // Object.assign(this, parsedData);
+    
     Object.assign(this, data);
     //this.needsMovementUpdate = true; // Not needed. MovementComponent update will
     // detect changes and automatically mark them for needing network update

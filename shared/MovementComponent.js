@@ -10,7 +10,6 @@ export class MovementComponent {
   #prevY;
   #prevRotation;
   #prevVelocity;
-  #isApplyingNetworkUpdate; // Flag to track network update
 
   constructor({ actor }) {
     this.actor = actor;
@@ -20,25 +19,28 @@ export class MovementComponent {
     this.#prevY = actor.y;
     this.#prevRotation = actor.rotation;
     this.#prevVelocity = { ...actor.velocity };
-    this.#isApplyingNetworkUpdate = false; // Initialize flag
   }
 
   applyNetworkMovementUpdate(updateData) {
-    this.#isApplyingNetworkUpdate = true; // Set flag before applying updates
 
-    Object.assign(this.actor, updateData);
+    //Object.assign(this.actor, updateData);
+    if (updateData.x) this.actor.x = updateData.x;
+    if (updateData.y) this.actor.y = updateData.y;
+    if (updateData.rotation) this.actor.rotation = updateData.rotation;
+    if (updateData.velocity) this.actor.velocity = updateData.velocity;
+
     if (updateData.x) this.#prevX = updateData.x;
     if (updateData.y) this.#prevY = updateData.y;
     if (updateData.rotation) this.#prevRotation = updateData.rotation;
     if (updateData.velocity) this.#prevVelocity = updateData.velocity;
-
-    this.#isApplyingNetworkUpdate = false; // Reset flag after applying updates
+    
     this.needsUpdate = false
+    this.updates = {}
   }
 
   handleShipMovement(delta) {
-    this.actor.setRotation(this.actor.rotation %= Math.PI * 2); // This just converts our rotation into phaser 3 rotations
-    //this.actor.rotation %= Math.PI * 2;
+    //this.actor.setRotation(this.actor.rotation %= Math.PI * 2); // This just converts our rotation into phaser 3 rotations
+    //this.actor.rotation %= Math.PI * 2;    
   
     if (this.actor.inputStates.thrustForward && !this.actor.inputStates.braking) {
       this.applyForce(this.actor, this.actor.thrust);
@@ -55,23 +57,12 @@ export class MovementComponent {
     if (this.actor.inputStates.rotateRight) {
       this.rotateRight(delta);
     }
+    
+    this.actor.x += this.actor.velocity.x;
+    this.actor.y += this.actor.velocity.y;
   
-    this.limitSpeed();
-  
-    let newX, newY;
-
-    newX = this.actor.x + this.actor.velocity.x;
-    newY = this.actor.y + this.actor.velocity.y;
-
-    if (newX != this.actor.x) this.addNetworkUpdate("x", this.actor.x);
-    if (newY != this.actor.y) this.addNetworkUpdate("y", this.actor.y);
-    if (this.#prevRotation != this.actor.rotation) {
-      this.#prevRotation = this.actor.rotation;
-      this.addNetworkUpdate("rotation", this.actor.rotation);
-    }
-
-    this.actor.x = newX;
-    this.actor.y = newY;
+    //this.limitSpeed();
+    this.trackChanges();
   }
 
   applyForce(actor, amt, direction = 0) {
@@ -83,11 +74,7 @@ export class MovementComponent {
     actor.velocity.x += forceX * acceleration;
     actor.velocity.y += forceY * acceleration;
 
-    this.limitSpeed();    
-    this.addNetworkUpdate("velocity", {
-      x: this.actor.velocity.x,
-      y: this.actor.velocity.y,
-    });
+    this.limitSpeed();  
   }
 
   limitSpeed() {
@@ -96,8 +83,6 @@ export class MovementComponent {
       const scalingFactor = this.actor.maxSpeed / currentSpeed;
       this.actor.velocity.x *= scalingFactor;
       this.actor.velocity.y *= scalingFactor;
-      // this.addNetworkUpdate("x", this.actor.velocity.x);    
-      // this.addNetworkUpdate("y", this.actor.velocity.y);
     }
   }
 
@@ -110,13 +95,10 @@ export class MovementComponent {
 
   rotateLeft(delta) {    
     this.actor.setRotation(this.actor.rotation -= this.getRotationRate(delta));
-    this.addNetworkUpdate("rotation", this.actor.rotation);
   }
 
   rotateRight(delta) {
-    //this.actor.rotation += this.getRotationRate(delta);
     this.actor.setRotation(this.actor.rotation += this.getRotationRate(delta));
-    this.addNetworkUpdate("rotation", this.actor.rotation);
   }
 
   getRotationRate(delta) {
@@ -208,11 +190,6 @@ export class MovementComponent {
   
     if (Math.abs(this.actor.velocity.x) < 0.01) this.actor.velocity.x = 0;
     if (Math.abs(this.actor.velocity.y) < 0.01) this.actor.velocity.y = 0;
-  
-    this.addNetworkUpdate("velocity", {
-      x: this.actor.velocity.x,
-      y: this.actor.velocity.y,
-    });    
   }
   
   getVelocityRotation() {
@@ -220,10 +197,13 @@ export class MovementComponent {
   }
 
   trackChanges() {
-    if (this.#prevX !== this.actor.x) this.addNetworkUpdate("x", this.actor.x);
-    if (this.#prevY !== this.actor.y) this.addNetworkUpdate("y", this.actor.y);
-    if (this.#prevRotation !== this.actor.rotation) this.addNetworkUpdate("rotation", this.actor.rotation);
-    if (this.#prevVelocity.x !== this.actor.velocity.x || this.#prevVelocity.y !== this.actor.velocity.y) {
+    if (this.#prevX != this.actor.x) this.addNetworkUpdate("x", this.actor.x);
+    if (this.#prevY !==this.actor.y) this.addNetworkUpdate("y", this.actor.y);
+    if (this.#prevRotation !== this.actor.rotation) {
+      this.addNetworkUpdate("rotation", this.actor.rotation);
+      log.debug(this.#prevRotation === this.actor.rotation, this.#prevRotation === this.actor.rotation, this.#prevRotation, this.actor.rotation)
+    }
+    if (this.#prevVelocity.x != this.actor.velocity.x || this.#prevVelocity.y != this.actor.velocity.y) {
       this.addNetworkUpdate("velocity", { x: this.actor.velocity.x, y: this.actor.velocity.y });
     }
 
@@ -234,10 +214,10 @@ export class MovementComponent {
   }
   
   addNetworkUpdate(k, v) {
-    if (!this.#isApplyingNetworkUpdate) { // Check if network update is in progress
-      this.updates[k] = v;
-      this.needsUpdate = true;
-    }
+    log.info("addNetworkUpdate", k, v)
+
+    this.updates[k] = v;
+    this.needsUpdate = true;      
   }
 
   getAndClearUpdates() {

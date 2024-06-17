@@ -212,8 +212,7 @@ export const ActorManagerServer = {
     if (ActorManagerServer.playerControllers.has(socket.id)) {
       let socketsPlayerController = ActorManagerServer.playerControllers.get(socket.id);
 
-      //log.debug("got ", data, " from ", socket.id, socketsPlayerController.actor)
-      
+      //log.debug("got ", data, " from ", socket.id)      
       if (data.movement) socketsPlayerController.actor.setMovementUpdateFromClient(data.movement)
 
       //log.debug(socketsPlayerController.actor.MovementComponent.needsUpdate)
@@ -234,7 +233,7 @@ export const ActorManagerServer = {
         // to send it to everyone else, but not the sender.
         // Otherwise, broadcast the actor updates to everyone.
         if (socket) {
-          log.debug("Sent", { id: actor.id, updateData, updateType })
+          //log.debug("Sent", { id: actor.id, updateData, updateType })
           socket.broadcast.emit('actorUpdated', { id: actor.id, updateData, updateType });
         } else {
           //this.io.emit('actorUpdated', { id: actor.id, updateData, updateType });
