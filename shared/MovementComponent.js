@@ -69,18 +69,7 @@ export class MovementComponent {
 
     newX = this.actor.x + this.actor.velocity.x;
     newY = this.actor.y + this.actor.velocity.y;
-    // newRot = this.actor.rotation;
-
-    //if (oldX != newX) this.addNetworkUpdate("x", newX);
-    //if (oldY != newY) this.addNetworkUpdate("y", newY);
-    //console.log("rotty?", oldRot, this.actor.rotation, oldRot == this.actor.rotation)
-    //if (oldRot != this.actor.rotation) this.addNetworkUpdate("rotation", this.actor.rotation);
-
-    if (this.#prevRotation != this.actor.rotation) {
-      //this.#prevRotation = this.actor.rotation;
-      //this.addNetworkUpdate("rotation", this.actor.rotation);
-    }
-
+   
     this.actor.x = newX;
     this.actor.y = newY;
 
@@ -97,10 +86,6 @@ export class MovementComponent {
     actor.velocity.y += forceY * acceleration;
 
     this.limitSpeed();    
-    // this.addNetworkUpdate("velocity", {
-    //   x: this.actor.velocity.x,
-    //   y: this.actor.velocity.y,
-    // });
   }
 
   limitSpeed() {
@@ -109,8 +94,6 @@ export class MovementComponent {
       const scalingFactor = this.actor.maxSpeed / currentSpeed;
       this.actor.velocity.x *= scalingFactor;
       this.actor.velocity.y *= scalingFactor;
-      // this.addNetworkUpdate("x", this.actor.velocity.x);    
-      // this.addNetworkUpdate("y", this.actor.velocity.y);
     }
   }
 
@@ -123,13 +106,10 @@ export class MovementComponent {
 
   rotateLeft(delta) {    
     this.actor.rotation = this.actor.rotation -= this.getRotationRate(delta);
-    //this.addNetworkUpdate("rotation", this.actor.rotation);
   }
 
   rotateRight(delta) {
-    //this.actor.rotation += this.getRotationRate(delta);
     this.actor.rotation = this.actor.rotation += this.getRotationRate(delta);
-    //this.addNetworkUpdate("rotation", this.actor.rotation);
   }
 
   getRotationRate(delta) {
@@ -221,11 +201,6 @@ export class MovementComponent {
   
     if (Math.abs(this.actor.velocity.x) < 0.01) this.actor.velocity.x = 0;
     if (Math.abs(this.actor.velocity.y) < 0.01) this.actor.velocity.y = 0;
-  
-    // this.addNetworkUpdate("velocity", {
-    //   x: this.actor.velocity.x,
-    //   y: this.actor.velocity.y,
-    // });    
   }
   
   getVelocityRotation() {
@@ -248,7 +223,7 @@ export class MovementComponent {
   }
   
   addNetworkUpdate(k, v) {
-    log.info("addNetworkUpdate", k, v)
+    //log.info("addNetworkUpdate", k, v)
     if (!this.#isApplyingNetworkUpdate) { // Check if network update is in progress
       this.updates[k] = v;
       this.needsUpdate = true;
