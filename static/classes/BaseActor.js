@@ -4,8 +4,9 @@ import {log} from '../shared/helpers.js'
 import { ActorManagerClient } from '../utility/ActorManagerClient.js';
 
 export class BaseActor extends Phaser.GameObjects.Container {
-    constructor({ scene, x, y} = {}) {
+    constructor({ scene, id, x, y} = {}) {
         super(scene, x, y);
+		this.id = id;
         this.scene = scene;
         scene.add.existing(this);
         this.velocity = {
@@ -69,7 +70,7 @@ export class BaseActor extends Phaser.GameObjects.Container {
 			this.movementUpdates = this.movementComponent.getAndClearUpdates();
 			//log.info("Movement update", this.movementUpdates)
 
-			ActorManagerClient.sendUpdate({actor: this, movement: this.movementUpdates})
+			ActorManagerClient.sendUpdate({id: this.id, movement: this.movementUpdates})
 		}
     }
 }

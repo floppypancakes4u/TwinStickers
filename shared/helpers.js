@@ -68,7 +68,8 @@ export const log = {
     info: (...args) => baseLog({ text: '[INFO]', style: 'green' }, ...args),
     warning: (...args) => baseLog({ text: '[WARNING]', style: 'yellow' }, ...args),
     error: (...args) => baseLog({ text: '[ERROR]', style: 'red' }, ...args),
-    critical: (...args) => baseLog({ text: '[CRITICAL]', style: 'bgRed' }, ...args),
+    critical: (...args) => baseLog({ text: '[CRITICAL]', style: 'bgOrange' }, ...args),
+    hack: (...args) => baseLog({ text: '[CHEAT/HACK ATTEMPT]', style: 'bgRed' }, ...args),
     custom: (level, style, ...args) => baseLog({ text: `[${level.toUpperCase()}]`, style }, ...args),
 
     colorize: (text, style) => {

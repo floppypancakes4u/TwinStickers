@@ -212,8 +212,14 @@ export const ActorManagerServer = {
     if (ActorManagerServer.playerControllers.has(socket.id)) {
       let socketsPlayerController = ActorManagerServer.playerControllers.get(socket.id);
 
-      //log.debug("got ", data, " from ", socket.id)      
-      if (data.movement) socketsPlayerController.actor.setMovementUpdateFromClient(data.movement)
+         
+      const actor = socketsPlayerController.actor;
+      if (actor.id == data.id) {
+        if (data.movement) actor.setMovementUpdateFromClient(data.movement)
+      } else {
+        // FIXED // Currently, there is a major issue in MovementComponent that is causing other clients to the server updates it receives as it's own.
+        log.hack(`${socket.id} tried to update actor ${actor.id} but it doesn't have authority!`)   
+      }
 
       //log.debug(socketsPlayerController.actor.MovementComponent.needsUpdate)
     }

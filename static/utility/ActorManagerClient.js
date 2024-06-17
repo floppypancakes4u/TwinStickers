@@ -60,7 +60,7 @@ export const ActorManagerClient = {
 
       const ClassReference = classMap[className];
       if (ClassReference) {
-        actor = new ClassReference({scene: this.scene, x, y, velocity, rotation, className, classData});
+        actor = new ClassReference({scene: this.scene, id, x, y, velocity, rotation, className, classData});
       } else {
         throw new Error(`Class ${className} does not exist.`);
       }
