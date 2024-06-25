@@ -1,5 +1,5 @@
 export class Hardpoint {
-    constructor({ scene, id, parentActor, x, y, classData = { rotationSpeed: 0.05, texture: "dev_mining_turret"} }) {
+    constructor({ scene, id, parentActor, x, y, classData = { rotationSpeed: 0.01, texture: "dev_mining_turret"} }) {
         this.scene = scene;
         this.id = id;
         this.parentActor = parentActor;
