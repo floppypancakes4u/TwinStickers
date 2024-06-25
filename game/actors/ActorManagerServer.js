@@ -24,6 +24,20 @@ export const ActorManagerServer = {
   init(io) {
     this.io = io;
 
+    const roidData = {
+      //id: this.socket.id,
+      serverClassType: "ServerAsteroid",
+      clientClassType: "ClientAsteroid",
+      x: 100,
+      y: 100,
+      //texture: 'ship', // Adjust as needed
+      // options: {
+      //   roam: false,
+      // },
+    };
+    
+    this.spawnActor(roidData)
+
     io.on('connection', (socket) => {
       log.info(`Client connected:`, socket.id);
 

@@ -126,7 +126,7 @@ export class FlightActorBase extends ReplicatedActorBase {
       this.thrust = 5;
       this.brakingThrust = this.thrust / 5;
       this.rotationThrust = 360 // 360 is needed per 1000 effectiveWeight to turn once per second
-      this.maxSpeed = 20;
+      this.maxSpeed = 100;
 
       // Autopilot data
       this.autoPilotActive = false;

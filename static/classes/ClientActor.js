@@ -2,6 +2,7 @@ import { FlightBaseActor } from './BaseActor.js'
 import { MovementComponent } from '../shared/MovementComponent.js';
 import { InteractionComponent } from './InteractionComponent.js';
 import { Engine } from './Engine.js';
+import { Hardpoint } from './Hardpoint.js';
 import { log } from '../shared/helpers.js'
 
 const BRAKING_DISTANCE = 100;
@@ -21,6 +22,10 @@ export class ClientActor extends FlightBaseActor {
       new Engine({ scene, actor: this, x: -22, y: -6.5 }),
       new Engine({ scene, actor: this, x: -22, y: 6.5 }),
     ];
+
+    this.hardpoints = new Map();
+
+    this.hardpoints.set("test", new Hardpoint({scene, id: "test", parentActor: this, x: 22, y: -6.5}))
 
     //log.debug("ClientActor Created")
   }
@@ -66,5 +71,10 @@ export class ClientActor extends FlightBaseActor {
     this.engines.forEach((engine) => {
       engine.update();
     });
+
+    for (const [key, hardpoint] of this.hardpoints.entries()) {
+      //console.log(key, hardpoint);
+      hardpoint.update();
+    }
   }
 }
