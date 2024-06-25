@@ -3,6 +3,8 @@ import {InteractionComponent} from './InteractionComponent.js';
 import {log} from '../shared/helpers.js'
 import { ActorManagerClient } from '../utility/ActorManagerClient.js';
 
+const BRAKING_DISTANCE = 100;
+
 export class BaseActor extends Phaser.GameObjects.Container {
     constructor({ scene, id, x, y} = {}) {
         super(scene, x, y);

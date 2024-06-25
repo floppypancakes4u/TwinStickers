@@ -116,8 +116,11 @@ export class Controller {
 
     if (this.hoveredEntity) {
       console.log(`Right-clicked on object: ${this.hoveredEntity}`);
-      this.playerEntity.setAutopilotTarget({ target: this.hoveredEntity });
+
+      this.playerEntity.setSelectedHardpointsTarget(this.hoveredEntity);
+      //this.playerEntity.setAutopilotTarget({ target: this.hoveredEntity });
     } else {
+      this.playerEntity.setSelectedHardpointsTarget(null);
       console.log('No object was right-clicked.');
       this.playerEntity.setAutopilotTarget({
         x: worldPoint.x,

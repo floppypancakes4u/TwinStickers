@@ -34,6 +34,13 @@ export class ClientActor extends FlightBaseActor {
     this.controller = controller;
   }
 
+  setSelectedHardpointsTarget(actor) {
+    for (const [key, hardpoint] of this.hardpoints.entries()) {
+      //console.log(key, hardpoint);
+      hardpoint.setTarget(actor);
+    }
+  }
+
   drawDots() {
     return;
     this.graphics.clear(); // Clear previous drawings
