@@ -11,24 +11,29 @@ export class Hardpoint {
         this.offsetX = x;
         this.offsetY = y;
         this.rotationSpeed = classData.rotationSpeed; // Speed at which the hardpoint rotates towards its target, in radians per frame
-
+    
+        this.damagePerHit = 1;
+        this.rateOfFire = 10; // 10 times a second.
+        this.timeSinceLastShot = 0; // Time tracker for rate of fire
+    
         this.distance = 1000;  // max range of the hardpoint
         this.baseRotation = 0;     // default rotation to face right
         this.localRotation = this.baseRotation;     // default rotation to face right
         this.firingAngle = 360;       // angle of the firing arc
         this.drawFiringAngles = false;
-
+    
         // Add sprite and set its initial rotation
         this.sprite = scene.add.sprite(0, 0, classData.texture);
         this.sprite.setOrigin(0.5, 0.5);
         this.sprite.rotation = Phaser.Math.DegToRad(this.localRotation); // aligns sprite to face right
-
+    
         this.graphics = scene.add.graphics({ lineStyle: { width: 2, color: 0xffff00 } });
-
+    
         this.beamSprites = [];
-
+    
         this.active = false;
     }
+    
 
     setRotation(degrees) {
         this.localRotation = degrees;
@@ -148,6 +153,10 @@ export class Hardpoint {
             this.deactivate();
             return;
         }
+
+        if (this.targetActor && this.isFacingTarget()) {
+            this.targetActor.takeDamage(this.damagePerHit);
+        }
     
         let targetDistance = distance(this.parentActor, this.targetActor);
         let angle = this.sprite.rotation;
@@ -184,6 +193,13 @@ export class Hardpoint {
         return Math.abs(relativeTargetAngle) <= halfFiringAngleRadians;
     }
 
+    fire() {
+        if (this.targetActor && this.isFacingTarget()) {
+            this.targetActor.damage(this.damagePerHit);
+            console.log(`Firing at target ${this.targetActor.id} for ${this.damagePerHit} damage`);
+        }
+    }    
+
     activate() {
         if (this.active) return;
         this.active = true;
@@ -206,17 +222,24 @@ export class Hardpoint {
         //log.debug("Beam deactivated");
     }
 
-    update() {
+    update(deltaTime) {
         const offsetX = this.offsetX * Math.cos(this.parentActor.rotation) - this.offsetY * Math.sin(this.parentActor.rotation);
         const offsetY = this.offsetX * Math.sin(this.parentActor.rotation) + this.offsetY * Math.cos(this.parentActor.rotation);
-
+    
         this.worldX = this.parentActor.x + offsetX;
         this.worldY = this.parentActor.y + offsetY;
-
+    
         this.sprite.setPosition(this.worldX, this.worldY);
-
+    
         this.handleHardpointLocalRotation();
         this.drawAngledArc();
         this.updateBeam();
+    
+        // Handle firing according to rate of fire
+        this.timeSinceLastShot += deltaTime;
+        if (this.timeSinceLastShot >= 1000 / this.rateOfFire) {
+            this.fire();
+            this.timeSinceLastShot = 0;
+        }
     }
 }
