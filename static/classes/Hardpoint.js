@@ -171,16 +171,31 @@ export class Hardpoint {
             let segmentY = this.worldY + Math.sin(angle) * (i * segmentLength + segmentLength / 2);
             beam.setPosition(segmentX, segmentY);
             beam.rotation = angle;
-    
-            // Adjust the last segment width and rotation to avoid overshooting the target
+        
+            // Adjust the last segment to start at the end location and rotate towards the hardpoint
             if (i === this.beamSprites.length - 1) {
-                let lastSegmentWidth = targetDistance - (i * segmentLength);
-                beam.displayWidth = Math.max(lastSegmentWidth, 0);
-                //beam.rotation += Math.PI; // Rotate the last segment by 180 degrees
+                let endX = this.worldX + Math.cos(angle) * targetDistance;
+                let endY = this.worldY + Math.sin(angle) * targetDistance;
+                beam.setPosition(endX, endY);
+        
+                let lastSegmentAngle = Math.atan2(this.worldY - endY, this.worldX - endX);
+                beam.rotation = lastSegmentAngle;
+        
+                beam.displayWidth = segmentLength; // Reset to original segment length if needed
+        
+                // Add one more segment to the end of the last segment
+                let additionalSegmentX = endX + Math.cos(lastSegmentAngle) * segmentLength;
+                let additionalSegmentY = endY + Math.sin(lastSegmentAngle) * segmentLength;
+                let additionalSegment = this.scene.add.sprite(additionalSegmentX, additionalSegmentY, 'dev_mining_turret_beam');
+                additionalSegment.play('beamAnimation'); // Assuming 'beamAnimation' is the key for the animation
+                additionalSegment.rotation = lastSegmentAngle;
+        
+                this.beamSprites.push(additionalSegment);
             } else {
                 beam.displayWidth = segmentLength;
             }
         });
+              
     }
     
     
