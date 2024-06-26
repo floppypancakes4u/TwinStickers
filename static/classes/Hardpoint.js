@@ -1,4 +1,5 @@
 import { distance } from "../shared/helpers.js";
+import { MathHelper } from "../shared/mathhelper.js";
 
 export class Hardpoint {
     constructor({ scene, id, parentActor, x, y, classData = { rotationSpeed: 0.003, texture: "dev_mining_turret" } }) {
@@ -25,7 +26,7 @@ export class Hardpoint {
         // Add sprite and set its initial rotation
         this.sprite = scene.add.sprite(0, 0, classData.texture);
         this.sprite.setOrigin(0.5, 0.5);
-        this.sprite.rotation = Phaser.Math.DegToRad(this.localRotation); // aligns sprite to face right
+        this.sprite.rotation = MathHelper.DegToRad(this.localRotation); // aligns sprite to face right
     
         this.graphics = scene.add.graphics({ lineStyle: { width: 2, color: 0xffff00 } });
     
@@ -57,8 +58,8 @@ export class Hardpoint {
         const interval = 250;
 
         // Convert rotation and angle from degrees to radians
-        let halfAngleRadians = Phaser.Math.DegToRad(this.firingAngle / 2);
-        let rotation = Phaser.Math.DegToRad(this.baseRotation) + this.parentActor.rotation;
+        let halfAngleRadians = MathHelper.DegToRad(this.firingAngle / 2);
+        let rotation = MathHelper.DegToRad(this.baseRotation) + this.parentActor.rotation;
 
         this.graphics.clear();
         this.graphics.lineStyle(2, 0xffffff, 1);
@@ -110,17 +111,17 @@ export class Hardpoint {
     handleHardpointLocalRotation() {
         // Get the base rotation from the parent actor
         let baseAngle = this.parentActor.rotation;
-        let currentAngle = baseAngle + Phaser.Math.DegToRad(this.localRotation);
+        let currentAngle = baseAngle + MathHelper.DegToRad(this.localRotation);
         let deltaAngle;
         let setHardpointToHomePosition = false;
         if (this.targetActor) {
             // Calculate the angle from the hardpoint to the target
             let targetAngle = Math.atan2(this.targetActor.y - this.worldY, this.targetActor.x - this.worldX);
-            deltaAngle = Phaser.Math.Angle.Wrap(targetAngle - currentAngle);
+            deltaAngle = MathHelper.Angle.Wrap(targetAngle - currentAngle);
 
             // Calculate the half angle of the firing arc in radians
-            let halfFiringAngleRadians = Phaser.Math.DegToRad(this.firingAngle / 2);
-            let relativeTargetAngle = Phaser.Math.Angle.Wrap(targetAngle - baseAngle);
+            let halfFiringAngleRadians = MathHelper.DegToRad(this.firingAngle / 2);
+            let relativeTargetAngle = MathHelper.Angle.Wrap(targetAngle - baseAngle);
 
             // Check if the target is within the dead zone
             if (Math.abs(relativeTargetAngle) > halfFiringAngleRadians) {
@@ -133,18 +134,18 @@ export class Hardpoint {
 
         if (setHardpointToHomePosition) {
             // Gradually rotate back to the home position (0 degrees) if no target
-            deltaAngle = Phaser.Math.Angle.Wrap(baseAngle - currentAngle);
+            deltaAngle = MathHelper.Angle.Wrap(baseAngle - currentAngle);
         }
 
         // Calculate the maximum allowable rotation per frame, clamped by rotationSpeed
-        let rotationChange = Phaser.Math.Clamp(deltaAngle, -this.rotationSpeed, this.rotationSpeed);
+        let rotationChange = MathHelper.Clamp(deltaAngle, -this.rotationSpeed, this.rotationSpeed);
 
         // Apply the rotation change
-        let newLocalRotationRadians = Phaser.Math.Angle.Wrap(currentAngle + rotationChange);
-        this.localRotation = Phaser.Math.RadToDeg(newLocalRotationRadians - baseAngle);
+        let newLocalRotationRadians = MathHelper.Angle.Wrap(currentAngle + rotationChange);
+        this.localRotation = MathHelper.RadToDeg(newLocalRotationRadians - baseAngle);
 
         // Update the sprite rotation to match the local rotation
-        this.sprite.rotation = baseAngle + Phaser.Math.DegToRad(this.localRotation);
+        this.sprite.rotation = baseAngle + MathHelper.DegToRad(this.localRotation);
     }
     
     activate() {
@@ -166,11 +167,11 @@ export class Hardpoint {
         let currentAngle = this.sprite.rotation;
     
         // Normalize angles to the range [-PI, PI]
-        targetAngle = Phaser.Math.Angle.Wrap(targetAngle);
-        currentAngle = Phaser.Math.Angle.Wrap(currentAngle);
+        targetAngle = MathHelper.Angle.Wrap(targetAngle);
+        currentAngle = MathHelper.Angle.Wrap(currentAngle);
     
         // Calculate the absolute difference between the target angle and the current angle
-        let angleDifference = Phaser.Math.Angle.Wrap(targetAngle - currentAngle);    
+        let angleDifference = MathHelper.Angle.Wrap(targetAngle - currentAngle);    
         let facingTarget = Math.abs(angleDifference) <= 0.01;    
     
         return facingTarget;
