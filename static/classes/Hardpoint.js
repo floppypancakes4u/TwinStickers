@@ -208,30 +208,29 @@ export class BeamHardpoint extends Hardpoint {
     constructor({ scene, id, parentActor, x, y, classData = { rotationSpeed: 0.003, texture: "dev_mining_turret" } }) {
         super({ scene, id, parentActor, x, y, classData: { rotationSpeed: 0.003, texture: "dev_mining_turret" } })
 
-        this.beamSprites = [];
+        this.beamSprite = null;
 
     }
 
     activateBeam() {
         // Check if we need to create a beam sprite
-        if (this.beamSprites.length === 0) {
+        if (this.beamSprite === null) {
             let beamSegment = this.scene.add.sprite(0, 0, 'dev_mining_turret_beam');
             beamSegment.play('beamAnimation'); // Assuming 'beamAnimation' is the key for the animation
-            this.beamSprites.push(beamSegment);
+            this.beamSprite = beamSegment;
             //console.log("Beam activated with 1 segment");
         }
     }
     
     deactivateBeam() {
-        this.beamSprites.forEach(beam => beam.destroy());
-        this.beamSprites = [];
+        if (!this.beamSprite) return;
+        this.beamSprite.destroy();
+        this.beamSprite = null;
     }
     
     deactivate() {
         super.deactivate();
-
-        this.beamSprites.forEach(beam => beam.destroy());
-        this.beamSprites = [];
+        this.deactivateBeam();
     }
 
     updateBeam() {
@@ -249,10 +248,10 @@ export class BeamHardpoint extends Hardpoint {
             let targetDistance = distance(this.parentActor, this.targetActor);
             let angle = this.sprite.rotation;
     
-            if (!this.beamSprites[0]) return;
+            if (!this.beamSprite == null) return;
     
             // Get the beam sprite
-            let beam = this.beamSprites[0];
+            let beam = this.beamSprite;
     
             // Update the position, rotation, and width of the beam sprite
             let segmentX = this.worldX + Math.cos(angle) * (targetDistance / 2);
