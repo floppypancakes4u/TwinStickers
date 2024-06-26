@@ -140,7 +140,6 @@ export class Hardpoint {
         // Update the sprite rotation to match the local rotation
         this.sprite.rotation = baseAngle + Phaser.Math.DegToRad(this.localRotation);
     }
-
     updateBeam() {
         if (!this.active) return;
     
@@ -173,15 +172,17 @@ export class Hardpoint {
             beam.setPosition(segmentX, segmentY);
             beam.rotation = angle;
     
-            // Adjust the last segment width to avoid overshooting the target
+            // Adjust the last segment width and rotation to avoid overshooting the target
             if (i === this.beamSprites.length - 1) {
                 let lastSegmentWidth = targetDistance - (i * segmentLength);
                 beam.displayWidth = Math.max(lastSegmentWidth, 0);
+                //beam.rotation += Math.PI; // Rotate the last segment by 180 degrees
             } else {
                 beam.displayWidth = segmentLength;
             }
         });
     }
+    
     
     isFacingTarget() {
         if (!this.targetActor) return false;
