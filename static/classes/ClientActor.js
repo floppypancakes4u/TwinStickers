@@ -25,7 +25,8 @@ export class ClientActor extends FlightBaseActor {
 
     this.hardpoints = new Map();
 
-    this.hardpoints.set("test", new Hardpoint({scene, id: "test", parentActor: this, x: 22, y: -6.5}))
+    this.hardpoints.set("test", new Hardpoint({scene, id: "test", parentActor: this, x: -2, y: -20.5}))
+    this.hardpoints.set("test2", new Hardpoint({scene, id: "test2", parentActor: this, x: 2, y: 20.5}))
 
     //log.debug("ClientActor Created")
   }

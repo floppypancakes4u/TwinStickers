@@ -1,7 +1,7 @@
 import { distance } from "../shared/helpers.js";
 
 export class Hardpoint {
-    constructor({ scene, id, parentActor, x, y, classData = { rotationSpeed: 0.01, texture: "dev_mining_turret" } }) {
+    constructor({ scene, id, parentActor, x, y, classData = { rotationSpeed: 0.003, texture: "dev_mining_turret" } }) {
         this.scene = scene;
         this.id = id;
         this.parentActor = parentActor;
@@ -140,6 +140,7 @@ export class Hardpoint {
         // Update the sprite rotation to match the local rotation
         this.sprite.rotation = baseAngle + Phaser.Math.DegToRad(this.localRotation);
     }
+    
     updateBeam() {
         if (!this.active) return;
     
@@ -150,54 +151,24 @@ export class Hardpoint {
     
         let targetDistance = distance(this.parentActor, this.targetActor);
         let angle = this.sprite.rotation;
-        let segmentLength = 32;
     
-        // Determine the number of beam segments needed
-        let segmentCount = Math.ceil(targetDistance / segmentLength);
-    
-        // Add or remove segments as necessary
-        while (this.beamSprites.length < segmentCount) {
+        // Check if we need to create a beam sprite
+        if (this.beamSprites.length === 0) {
             let beamSegment = this.scene.add.sprite(0, 0, 'dev_mining_turret_beam');
             beamSegment.play('beamAnimation'); // Assuming 'beamAnimation' is the key for the animation
             this.beamSprites.push(beamSegment);
         }
-        while (this.beamSprites.length > segmentCount) {
-            this.beamSprites.pop().destroy();
-        }
     
-        // Update position and rotation of each beam segment
-        this.beamSprites.forEach((beam, i) => {
-            let segmentX = this.worldX + Math.cos(angle) * (i * segmentLength + segmentLength / 2);
-            let segmentY = this.worldY + Math.sin(angle) * (i * segmentLength + segmentLength / 2);
-            beam.setPosition(segmentX, segmentY);
-            beam.rotation = angle;
-        
-            // Adjust the last segment to start at the end location and rotate towards the hardpoint
-            if (i === this.beamSprites.length - 1) {
-                let endX = this.worldX + Math.cos(angle) * targetDistance;
-                let endY = this.worldY + Math.sin(angle) * targetDistance;
-                beam.setPosition(endX, endY);
-        
-                let lastSegmentAngle = Math.atan2(this.worldY - endY, this.worldX - endX);
-                beam.rotation = lastSegmentAngle;
-        
-                beam.displayWidth = segmentLength; // Reset to original segment length if needed
-        
-                // Add one more segment to the end of the last segment
-                let additionalSegmentX = endX + Math.cos(lastSegmentAngle) * segmentLength;
-                let additionalSegmentY = endY + Math.sin(lastSegmentAngle) * segmentLength;
-                let additionalSegment = this.scene.add.sprite(additionalSegmentX, additionalSegmentY, 'dev_mining_turret_beam');
-                additionalSegment.play('beamAnimation'); // Assuming 'beamAnimation' is the key for the animation
-                additionalSegment.rotation = lastSegmentAngle;
-        
-                this.beamSprites.push(additionalSegment);
-            } else {
-                beam.displayWidth = segmentLength;
-            }
-        });
-              
+        // Get the beam sprite
+        let beam = this.beamSprites[0];
+    
+        // Update the position, rotation, and width of the beam sprite
+        let segmentX = this.worldX + Math.cos(angle) * (targetDistance / 2);
+        let segmentY = this.worldY + Math.sin(angle) * (targetDistance / 2);
+        beam.setPosition(segmentX, segmentY);
+        beam.rotation = angle;
+        beam.displayWidth = targetDistance;
     }
-    
     
     isFacingTarget() {
         if (!this.targetActor) return false;
@@ -217,24 +188,14 @@ export class Hardpoint {
         if (this.active) return;
         this.active = true;
     
-        let targetDistance = distance(this.parentActor, this.targetActor);
-        let angle = this.sprite.rotation;
-        let segmentLength = 32; // Assuming the beam sprite is 32 pixels long
-        let segmentCount = Math.ceil(targetDistance / segmentLength);
-    
-        for (let i = 0; i < segmentCount; i++) {
-            let segmentX = this.worldX + Math.cos(angle) * (i * segmentLength + segmentLength / 2);
-            let segmentY = this.worldY + Math.sin(angle) * (i * segmentLength + segmentLength / 2);
-            let beamSegment = this.scene.add.sprite(segmentX, segmentY, 'dev_mining_turret_beam');
-    
-            // Set up the animation for the beam segment
+        // Create the beam sprite if it doesn't exist
+        if (this.beamSprites.length === 0) {
+            let beamSegment = this.scene.add.sprite(0, 0, 'dev_mining_turret_beam');
             beamSegment.play('beamAnimation'); // Assuming 'beamAnimation' is the key for the animation
-    
-            beamSegment.rotation = angle;
             this.beamSprites.push(beamSegment);
         }
     
-        console.log("Beam activated with", this.beamSprites.length, "segments");
+        console.log("Beam activated with 1 segment");
     }
     
     deactivate() {

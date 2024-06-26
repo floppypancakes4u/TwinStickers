@@ -88,9 +88,9 @@ export class FlightBaseActor extends BaseActor {
 		};
   
 		// Propulsion Propeties
-		this.thrust = 50;
+		this.thrust = 2;
 		this.brakingThrust = this.thrust / 5;
-		this.rotationThrust = 360 // 360 is needed per 1000 effectiveWeight to turn once per second
+		this.rotationThrust = 60 // 360 is needed per 1000 effectiveWeight to turn once per second
 		this.maxSpeed = 80;
   
 		// Autopilot data
