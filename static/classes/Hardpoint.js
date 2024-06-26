@@ -40,9 +40,13 @@ export class Hardpoint {
     }
 
     setTarget(actor) {
-        console.log("setTarget set to ", actor);
         this.targetActor = actor;
-        this.activate();
+
+        if (actor === null) {
+            this.deactivate();
+        } else {
+            this.activate();
+        }
     }
 
     setVisibility(state) {
@@ -146,72 +150,10 @@ export class Hardpoint {
         this.sprite.rotation = baseAngle + Phaser.Math.DegToRad(this.localRotation);
     }
     
-    updateBeam() {
-        if (!this.active) return;
-    
-        if (!this.targetActor || !this.isFacingTarget()) {
-            this.deactivate();
-            return;
-        }
-
-        if (this.targetActor && this.isFacingTarget()) {
-            this.targetActor.takeDamage(this.damagePerHit);
-        }
-    
-        let targetDistance = distance(this.parentActor, this.targetActor);
-        let angle = this.sprite.rotation;
-    
-        // Check if we need to create a beam sprite
-        if (this.beamSprites.length === 0) {
-            let beamSegment = this.scene.add.sprite(0, 0, 'dev_mining_turret_beam');
-            beamSegment.play('beamAnimation'); // Assuming 'beamAnimation' is the key for the animation
-            this.beamSprites.push(beamSegment);
-        }
-    
-        // Get the beam sprite
-        let beam = this.beamSprites[0];
-    
-        // Update the position, rotation, and width of the beam sprite
-        let segmentX = this.worldX + Math.cos(angle) * (targetDistance / 2);
-        let segmentY = this.worldY + Math.sin(angle) * (targetDistance / 2);
-        beam.setPosition(segmentX, segmentY);
-        beam.rotation = angle;
-        beam.displayWidth = targetDistance;
-    }
-    
-    isFacingTarget() {
-        if (!this.targetActor) return false;
-
-        // Calculate the angle from the hardpoint to the target
-        let targetAngle = Math.atan2(this.targetActor.y - this.worldY, this.targetActor.x - this.worldX);
-        let currentAngle = this.sprite.rotation;
-
-        // Check if the target is within the firing arc
-        let halfFiringAngleRadians = Phaser.Math.DegToRad(this.firingAngle / 2);
-        let relativeTargetAngle = Phaser.Math.Angle.Wrap(targetAngle - currentAngle);
-
-        return Math.abs(relativeTargetAngle) <= halfFiringAngleRadians;
-    }
-
-    fire() {
-        if (this.targetActor && this.isFacingTarget()) {
-            this.targetActor.damage(this.damagePerHit);
-            console.log(`Firing at target ${this.targetActor.id} for ${this.damagePerHit} damage`);
-        }
-    }    
-
     activate() {
         if (this.active) return;
-        this.active = true;
-    
-        // Create the beam sprite if it doesn't exist
-        if (this.beamSprites.length === 0) {
-            let beamSegment = this.scene.add.sprite(0, 0, 'dev_mining_turret_beam');
-            beamSegment.play('beamAnimation'); // Assuming 'beamAnimation' is the key for the animation
-            this.beamSprites.push(beamSegment);
-        }
-    
-        console.log("Beam activated with 1 segment");
+        this.active = true;    
+        //console.log("Hardpoint activated");
     }
     
     deactivate() {
@@ -219,8 +161,79 @@ export class Hardpoint {
         this.active = false;
         this.beamSprites.forEach(beam => beam.destroy());
         this.beamSprites = [];
-        //log.debug("Beam deactivated");
+        //console.log("Hardpoint deactivated");
     }
+
+    activateBeam() {
+        // Check if we need to create a beam sprite
+        if (this.beamSprites.length === 0) {
+            let beamSegment = this.scene.add.sprite(0, 0, 'dev_mining_turret_beam');
+            beamSegment.play('beamAnimation'); // Assuming 'beamAnimation' is the key for the animation
+            this.beamSprites.push(beamSegment);
+            //console.log("Beam activated with 1 segment");
+        }
+    }
+    
+    deactivateBeam() {
+        this.beamSprites.forEach(beam => beam.destroy());
+        this.beamSprites = [];
+    }
+
+    updateBeam() {
+        if (!this.active) return;
+    
+        if (this.targetActor && this.isFacingTarget()) {
+            let targetDistance = distance(this.parentActor, this.targetActor);
+            let angle = this.sprite.rotation;
+    
+            if (!this.beamSprites[0]) return;
+    
+            // Get the beam sprite
+            let beam = this.beamSprites[0];
+    
+            // Update the position, rotation, and width of the beam sprite
+            let segmentX = this.worldX + Math.cos(angle) * (targetDistance / 2);
+            let segmentY = this.worldY + Math.sin(angle) * (targetDistance / 2);
+            beam.setPosition(segmentX, segmentY);
+            beam.rotation = angle;
+            beam.displayWidth = targetDistance;
+    
+            this.targetActor.takeDamage(this.damagePerHit);
+        } else {
+            this.deactivateBeam();
+        }
+    }
+    
+    isFacingTarget() {
+        if (!this.targetActor) return false;
+    
+        // Calculate the angle from the hardpoint to the target
+        let targetAngle = Math.atan2(this.targetActor.y - this.worldY, this.targetActor.x - this.worldX);
+        let currentAngle = this.sprite.rotation;
+    
+        // Normalize angles to the range [-PI, PI]
+        targetAngle = Phaser.Math.Angle.Wrap(targetAngle);
+        currentAngle = Phaser.Math.Angle.Wrap(currentAngle);
+    
+        // Calculate the absolute difference between the target angle and the current angle
+        let angleDifference = Phaser.Math.Angle.Wrap(targetAngle - currentAngle);    
+        let facingTarget = Math.abs(angleDifference) <= 0.01;    
+
+        if (facingTarget) {
+            this.activateBeam();
+        } else {
+            this.deactivateBeam();
+        }
+    
+        return facingTarget;
+    }  
+
+    fire() {
+        if (this.targetActor && this.isFacingTarget()) {
+            this.targetActor.damage(this.damagePerHit);
+            console.log(`Firing at target ${this.targetActor.id} for ${this.damagePerHit} damage`);
+        }
+    }    
 
     update(deltaTime) {
         const offsetX = this.offsetX * Math.cos(this.parentActor.rotation) - this.offsetY * Math.sin(this.parentActor.rotation);
