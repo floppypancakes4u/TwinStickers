@@ -179,7 +179,7 @@ export class Hardpoint {
 
     fire() {
         if (this.targetActor && this.isFacingTarget()) {
-            this.targetActor.damage(this.damagePerHit);
+            this.targetActor.takeDamage(this.damagePerHit);
             console.log(`Firing at target ${this.targetActor.id} for ${this.damagePerHit} damage`);
         }
     }    
@@ -271,5 +271,62 @@ export class BeamHardpoint extends Hardpoint {
         super.update(deltaTime)
         
         this.updateBeam();
+    }
+}
+
+export class ProjectileHardpoint extends Hardpoint {
+    constructor({ scene, id, parentActor, x, y, classData = { rotationSpeed: 0.003, texture: "dev_mining_turret" } }) {
+        super({ scene, id, parentActor, x, y, classData });
+
+        this.bullets = [];
+        this.rateOfFire = 3; // 10 times a second.
+        this.bulletSpeed = 1000; // Speed of the bullet
+    }
+
+    createBullet() {
+        let bullet = this.scene.add.sprite(this.worldX, this.worldY, 'dev_mining_turret_beam');
+        bullet.setOrigin(0.5, 0.5);
+        bullet.rotation = this.sprite.rotation;
+        bullet.speed = this.bulletSpeed;
+        bullet.travelledDistance = 0; // Track distance travelled by the bullet
+        this.bullets.push(bullet);
+    }
+
+    updateBullets(deltaTime) {
+        this.bullets.forEach((bullet, index) => {
+            let velocityX = Math.cos(bullet.rotation) * bullet.speed * deltaTime / 1000;
+            let velocityY = Math.sin(bullet.rotation) * bullet.speed * deltaTime / 1000;
+            bullet.x += velocityX;
+            bullet.y += velocityY;
+
+            // Update travelled distance
+            bullet.travelledDistance += Math.sqrt(velocityX * velocityX + velocityY * velocityY);
+
+            // Remove bullets that travel more than this.distance
+            if (bullet.travelledDistance > this.distance) {
+                bullet.destroy();
+                this.bullets.splice(index, 1);
+            }
+        });
+    }
+
+    fire() {
+        if (this.targetActor && this.isFacingTarget()) {
+            this.createBullet();
+            console.log(`Firing bullet at target ${this.targetActor.id}`);
+        }
+    }
+
+    update(deltaTime) {
+        super.update(deltaTime);
+
+        this.updateBullets(deltaTime);
+
+        // Handle firing according to rate of fire
+        this.timeSinceLastShot += deltaTime;
+        if (this.timeSinceLastShot >= 1000 / this.rateOfFire) {
+            this.fire();
+            this.timeSinceLastShot = 0;
+        }
     }
 }
