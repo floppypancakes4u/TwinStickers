@@ -26,11 +26,21 @@ class World extends Phaser.Scene {
     this.load.setBaseURL('https://twinstickers-mgwe--3000--9e2d28a3.local-credentialless.webcontainer.io/');
     this.load.image('ship', 'static/assets/x2kship.png');
     this.load.image('dev_mining_turret', 'static/assets/turret_02_mk1.png');
-    this.load.image('dev_mining_turret_beam', 'static/assets/turret_02_beam_01_anim.gif');
+    //this.load.image('dev_mining_turret_beam', 'static/assets/turret_02_beam_01_anim.gif');
+    this.load.spritesheet('dev_mining_turret_beam', 'static/assets/test.png', { frameWidth: 32, frameHeight: 32});
     this.load.image('blue', 'static/assets/blue.png');
+  
   }
 
   create() {
+
+    this.anims.create({
+      key: 'beamAnimation',
+      frames: this.anims.generateFrameNumbers('dev_mining_turret_beam', { frames: [0, 1, 2, 3, 4] }),
+      frameRate: 10, // Set the frame rate as needed
+      repeat: -1 // Repeat indefinitely
+  });
+
     this.input.mouse.disableContextMenu();
 
     // Black background

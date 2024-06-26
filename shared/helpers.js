@@ -81,6 +81,12 @@ export const log = {
     }
 };
 
+export function distance(actorjuan, actortwo) {
+    const dx = actorjuan.x - actortwo.x;
+    const dy = actorjuan.y - actortwo.y;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
 export function rgbToHex(r, g, b) {
     return (r << 16) | (g << 8) | b;
 }

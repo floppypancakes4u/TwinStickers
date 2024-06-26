@@ -58,9 +58,9 @@ export class Controller {
       if (this.playerEntity) this.playerEntity.inputStates.space = false;
     });
 
-    this.scene.input.on('pointerdown', (pointer) => {
+    this.scene.input.on('pointerdown', (pointer, objects) => {
       if (pointer.rightButtonDown()) {
-        this.handleRightClick(pointer);
+        this.handleRightClick(pointer, objects);
       }
     });
 
@@ -100,13 +100,13 @@ export class Controller {
 
   }
 
-  handleRightClick(pointer) {
+  handleRightClick(pointer, objects) {
     const worldPoint = this.scene.cameras.main.getWorldPoint(
       pointer.x,
       pointer.y
     );
     console.log(
-      `Right-clicked at world coordinates: (${worldPoint.x}, ${worldPoint.y})`
+      `Right-clicked at world coordinates: (${worldPoint.x}, ${worldPoint.y})`, objects
     );
 
     // Check for objects at the clicked coordinates
@@ -114,18 +114,19 @@ export class Controller {
     //   return child.getBounds().contains(worldPoint.x, worldPoint.y);
     // });
 
-    if (this.hoveredEntity) {
-      console.log(`Right-clicked on object: ${this.hoveredEntity}`);
+    if (objects && objects[0]) {
+      this.hoveredEntity = objects[0];
+      //console.log(`Right-clicked on object: ${this.hoveredEntity}`);
 
       this.playerEntity.setSelectedHardpointsTarget(this.hoveredEntity);
       //this.playerEntity.setAutopilotTarget({ target: this.hoveredEntity });
     } else {
       this.playerEntity.setSelectedHardpointsTarget(null);
-      console.log('No object was right-clicked.');
-      this.playerEntity.setAutopilotTarget({
-        x: worldPoint.x,
-        y: worldPoint.y,
-      });
+      //console.log('No object was right-clicked.');
+      // this.playerEntity.setAutopilotTarget({
+      //   x: worldPoint.x,
+      //   y: worldPoint.y,
+      // });
     }
   }
 
@@ -134,8 +135,8 @@ export class Controller {
   }
 
   setHoveredEntity(ActorInstance) {
-    this.hoveredEntity = ActorInstance;
-    console.log('this hovered entity', ActorInstance.constructor.name);
+    //this.hoveredEntity = ActorInstance;
+    //console.log('this hovered entity', ActorInstance.constructor.name);
   }
 
   // followFocusedEntity() {

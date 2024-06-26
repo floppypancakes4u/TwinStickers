@@ -74,7 +74,6 @@ export class InteractionComponent {
   updateReticle() {
     //console.log("updateReticle", this.actorHovered, this.actorSelected)
     if (this.actorHovered && !this.actorSelected) {
-      console.log("should draw ret hover")
       this.drawReticle(0x636262);
       return;
     }
