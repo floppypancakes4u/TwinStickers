@@ -29,12 +29,9 @@ export class Hardpoint {
     
         this.graphics = scene.add.graphics({ lineStyle: { width: 2, color: 0xffff00 } });
     
-        this.beamSprites = [];
-    
         this.active = false;
     }
     
-
     setRotation(degrees) {
         this.localRotation = degrees;
     }
@@ -159,51 +156,8 @@ export class Hardpoint {
     deactivate() {
         if (!this.active) return;
         this.active = false;
-        this.beamSprites.forEach(beam => beam.destroy());
-        this.beamSprites = [];
-        //console.log("Hardpoint deactivated");
     }
-
-    activateBeam() {
-        // Check if we need to create a beam sprite
-        if (this.beamSprites.length === 0) {
-            let beamSegment = this.scene.add.sprite(0, 0, 'dev_mining_turret_beam');
-            beamSegment.play('beamAnimation'); // Assuming 'beamAnimation' is the key for the animation
-            this.beamSprites.push(beamSegment);
-            //console.log("Beam activated with 1 segment");
-        }
-    }
-    
-    deactivateBeam() {
-        this.beamSprites.forEach(beam => beam.destroy());
-        this.beamSprites = [];
-    }
-
-    updateBeam() {
-        if (!this.active) return;
-    
-        if (this.targetActor && this.isFacingTarget()) {
-            let targetDistance = distance(this.parentActor, this.targetActor);
-            let angle = this.sprite.rotation;
-    
-            if (!this.beamSprites[0]) return;
-    
-            // Get the beam sprite
-            let beam = this.beamSprites[0];
-    
-            // Update the position, rotation, and width of the beam sprite
-            let segmentX = this.worldX + Math.cos(angle) * (targetDistance / 2);
-            let segmentY = this.worldY + Math.sin(angle) * (targetDistance / 2);
-            beam.setPosition(segmentX, segmentY);
-            beam.rotation = angle;
-            beam.displayWidth = targetDistance;
-    
-            this.targetActor.takeDamage(this.damagePerHit);
-        } else {
-            this.deactivateBeam();
-        }
-    }
-    
+   
     isFacingTarget() {
         if (!this.targetActor) return false;
     
@@ -218,12 +172,6 @@ export class Hardpoint {
         // Calculate the absolute difference between the target angle and the current angle
         let angleDifference = Phaser.Math.Angle.Wrap(targetAngle - currentAngle);    
         let facingTarget = Math.abs(angleDifference) <= 0.01;    
-
-        if (facingTarget) {
-            this.activateBeam();
-        } else {
-            this.deactivateBeam();
-        }
     
         return facingTarget;
     }  
@@ -246,13 +194,82 @@ export class Hardpoint {
     
         this.handleHardpointLocalRotation();
         this.drawAngledArc();
-        this.updateBeam();
-    
+            
         // Handle firing according to rate of fire
         this.timeSinceLastShot += deltaTime;
         if (this.timeSinceLastShot >= 1000 / this.rateOfFire) {
             this.fire();
             this.timeSinceLastShot = 0;
         }
+    }
+}
+
+export class BeamHardpoint extends Hardpoint {
+    constructor({ scene, id, parentActor, x, y, classData = { rotationSpeed: 0.003, texture: "dev_mining_turret" } }) {
+        super({ scene, id, parentActor, x, y, classData: { rotationSpeed: 0.003, texture: "dev_mining_turret" } })
+
+        this.beamSprites = [];
+
+    }
+
+    activateBeam() {
+        // Check if we need to create a beam sprite
+        if (this.beamSprites.length === 0) {
+            let beamSegment = this.scene.add.sprite(0, 0, 'dev_mining_turret_beam');
+            beamSegment.play('beamAnimation'); // Assuming 'beamAnimation' is the key for the animation
+            this.beamSprites.push(beamSegment);
+            //console.log("Beam activated with 1 segment");
+        }
+    }
+    
+    deactivateBeam() {
+        this.beamSprites.forEach(beam => beam.destroy());
+        this.beamSprites = [];
+    }
+    
+    deactivate() {
+        super.deactivate();
+
+        this.beamSprites.forEach(beam => beam.destroy());
+        this.beamSprites = [];
+    }
+
+    updateBeam() {
+        if (!this.active) return;
+    
+        const facingTarget = this.isFacingTarget();
+
+        if (facingTarget) {
+            this.activateBeam();
+        } else {
+            this.deactivateBeam();
+        }
+
+        if (this.targetActor && facingTarget) {
+            let targetDistance = distance(this.parentActor, this.targetActor);
+            let angle = this.sprite.rotation;
+    
+            if (!this.beamSprites[0]) return;
+    
+            // Get the beam sprite
+            let beam = this.beamSprites[0];
+    
+            // Update the position, rotation, and width of the beam sprite
+            let segmentX = this.worldX + Math.cos(angle) * (targetDistance / 2);
+            let segmentY = this.worldY + Math.sin(angle) * (targetDistance / 2);
+            beam.setPosition(segmentX, segmentY);
+            beam.rotation = angle;
+            beam.displayWidth = targetDistance;
+    
+            this.targetActor.takeDamage(this.damagePerHit);
+        } else {
+            this.deactivateBeam();
+        }
+    }
+
+    update(deltaTime) {
+        super.update(deltaTime)
+        
+        this.updateBeam();
     }
 }
