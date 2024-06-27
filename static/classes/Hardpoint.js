@@ -11,10 +11,9 @@ export class Hardpoint {
         this.worldY = 0;
         this.offsetX = x;
         this.offsetY = y;
-        this.projectileOffsetX = classData.projectileOffsetX;
-        this.projectileOffsetY = classData.projectileOffsetY;
-        this.damageSpawnerOffsets = classData.damageSpawnerOffsets;
-        this.damageSpawnPoints = this.damageSpawnerOffsets.length
+        this.classData = classData;
+        this.damageSpawnPoints = this.classData.damageSpawnerOffsets.length;
+        this.currentDamageSpawnerIndex = 0;
         this.rotationSpeed = classData.rotationSpeed; // Speed at which the hardpoint rotates towards its target, in radians per frame
     
         this.damagePerHit = 1;
@@ -46,8 +45,8 @@ export class ClientHardpoint extends Hardpoint {
 
     getProjectileSpawnPosition() {
         // Calculate the offset position based on the hardpoint's rotation
-        const offsetX = this.projectileOffsetX * Math.cos(this.sprite.rotation) - this.projectileOffsetY * Math.sin(this.sprite.rotation);
-        const offsetY = this.projectileOffsetX * Math.sin(this.sprite.rotation) + this.projectileOffsetY * Math.cos(this.sprite.rotation);
+        const offsetX = this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].x * Math.cos(this.sprite.rotation) - this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].y * Math.sin(this.sprite.rotation);
+        const offsetY = this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].x * Math.sin(this.sprite.rotation) + this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].y * Math.cos(this.sprite.rotation);
     
         // Calculate the world position for the projectile spawn
         const projectileX = this.worldX + offsetX;
@@ -56,6 +55,13 @@ export class ClientHardpoint extends Hardpoint {
         return { x: projectileX, y: projectileY };
     }
     
+    IncrementSpawnerIndex() {
+        this.currentDamageSpawnerIndex++;
+
+        if (this.currentDamageSpawnerIndex == this.damageSpawnPoints) {
+            this.currentDamageSpawnerIndex = 0;
+        }
+    }
     
     setRotation(degrees) {
         this.localRotation = degrees;
@@ -203,7 +209,8 @@ export class ClientHardpoint extends Hardpoint {
     fire() {
         if (this.targetActor && this.isFacingTarget()) {
             this.targetActor.takeDamage(this.damagePerHit);
-            console.log(`Firing at target ${this.targetActor.id} for ${this.damagePerHit} damage`);
+
+            this.IncrementSpawnerIndex()
         }
     }   
 
@@ -239,7 +246,6 @@ export class BeamHardpoint extends ClientHardpoint {
     activateBeam() {
         // Check if we need to create a beam sprite
         if (this.beamSprite === null) {
-            log.info("Beam Activated")
             let beamSegment = this.scene.add.sprite(0, 0, 'dev_mining_turret_beam');
             beamSegment.play('beamAnimation'); // Assuming 'beamAnimation' is the key for the animation
             this.beamSprite = beamSegment;
@@ -270,7 +276,7 @@ export class BeamHardpoint extends ClientHardpoint {
         }
 
         if (this.targetActor && facingTarget) {
-            let targetDistance = distance(this.parentActor, this.targetActor);
+            let targetDistance = Math.min(distance(this.parentActor, this.targetActor), this.distance);
             let angle = this.sprite.rotation;
     
             if (!this.beamSprite == null) return;
@@ -279,16 +285,14 @@ export class BeamHardpoint extends ClientHardpoint {
             let beam = this.beamSprite;
     
            // Get the starting position for the beam using the new method
-        const spawnPosition = this.getProjectileSpawnPosition();
+            const spawnPosition = this.getProjectileSpawnPosition();
 
-        log.info({spawnPosition})
-
-        // Update the position, rotation, and width of the beam sprite
-        let segmentX = spawnPosition.x + Math.cos(angle) * (targetDistance / 2);
-        let segmentY = spawnPosition.y + Math.sin(angle) * (targetDistance / 2);
-        beam.setPosition(segmentX, segmentY);
-        beam.rotation = angle;
-        beam.displayWidth = targetDistance;
+            // Update the position, rotation, and width of the beam sprite
+            let segmentX = spawnPosition.x + Math.cos(angle) * (targetDistance / 2);
+            let segmentY = spawnPosition.y + Math.sin(angle) * (targetDistance / 2);
+            beam.setPosition(segmentX, segmentY);
+            beam.rotation = angle;
+            beam.displayWidth = targetDistance;
     
             this.targetActor.takeDamage(this.damagePerHit);
         } else {
