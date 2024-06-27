@@ -1,8 +1,54 @@
 import { distance } from "../shared/helpers.js";
 import { MathHelper } from "../shared/mathhelper.js";
 
+const hardpointData = {
+    "devBlaster": {
+        type: "Projectile",
+        rotationSpeed: 0.03,
+        texture: "dev_mining_turret", 
+        projectileOffsetX: 11, 
+        projectileOffsetY: 0,
+        damagerOffsets: [],
+    },
+    "devBeam": {
+        type: "Beam",
+        rotationSpeed: 0.03,
+        texture: "dev_mining_turret", 
+        projectileOffsetX: 11, 
+        projectileOffsetY: 0,
+        damagerOffsets: [],
+    }
+}
+
 export class Hardpoint {
-    constructor({ scene, id, parentActor, x, y, classData = { rotationSpeed: 0.003, texture: "dev_mining_turret" } }) {
+    constructor({ id, parentActor, x, y, classData = hardpointData["devBlaster"] }) {
+        this.id = id;
+        this.parentActor = parentActor;
+        this.targetActor = null;
+        this.worldX = 0;
+        this.worldY = 0;
+        this.offsetX = x;
+        this.offsetY = y;
+        this.projectileOffsetX = classData.projectileOffsetX;
+        this.projectileOffsetY = classData.projectileOffsetY;
+        this.rotationSpeed = classData.rotationSpeed; // Speed at which the hardpoint rotates towards its target, in radians per frame
+    
+        this.damagePerHit = 1;
+        this.rateOfFire = 10; // 10 times a second.
+        this.timeSinceLastShot = 0; // Time tracker for rate of fire
+    
+        this.distance = 1000;  // max range of the hardpoint
+        this.baseRotation = 0;     // default rotation to face right
+        this.localRotation = this.baseRotation;     // default rotation to face right
+        this.firingAngle = 360;       // angle of the firing arc
+        this.drawFiringAngles = false;
+    
+        this.active = false;
+    }
+}
+
+export class ClientHardpoint extends Hardpoint {
+    constructor({ scene, id, parentActor, x, y, classData = hardpointData["devBlaster"] }) {
         this.scene = scene;
         this.id = id;
         this.parentActor = parentActor;
@@ -11,8 +57,12 @@ export class Hardpoint {
         this.worldY = 0;
         this.offsetX = x;
         this.offsetY = y;
+        this.projectileOffsetX = classData.projectileOffsetX;
+        this.projectileOffsetY = classData.projectileOffsetY;
         this.rotationSpeed = classData.rotationSpeed; // Speed at which the hardpoint rotates towards its target, in radians per frame
     
+
+        console.log({projectileOffsetX: this.projectileOffsetX, projectileOffsetY: this.projectileOffsetY})
         this.damagePerHit = 1;
         this.rateOfFire = 10; // 10 times a second.
         this.timeSinceLastShot = 0; // Time tracker for rate of fire
@@ -32,6 +82,20 @@ export class Hardpoint {
     
         this.active = false;
     }
+
+    getProjectileSpawnPosition() {
+        // Calculate the offset position based on the hardpoint's rotation
+        const offsetX = this.projectileOffsetX * Math.cos(this.sprite.rotation) - this.projectileOffsetY * Math.sin(this.sprite.rotation);
+        const offsetY = this.projectileOffsetX * Math.sin(this.sprite.rotation) + this.projectileOffsetY * Math.cos(this.sprite.rotation);
+    
+        // Calculate the world position for the projectile spawn
+        const projectileX = this.worldX + offsetX;
+        const projectileY = this.worldY + offsetY;
+    
+        console.log({pOX: this.projectileOffsetX, rot: this.sprite.rotation, offsetX, offsetY, projectileX, projectileY})
+        return { x: projectileX, y: projectileY };
+    }
+    
     
     setRotation(degrees) {
         this.localRotation = degrees;
@@ -182,7 +246,7 @@ export class Hardpoint {
             this.targetActor.takeDamage(this.damagePerHit);
             console.log(`Firing at target ${this.targetActor.id} for ${this.damagePerHit} damage`);
         }
-    }    
+    }   
 
     update(deltaTime) {
         const offsetX = this.offsetX * Math.cos(this.parentActor.rotation) - this.offsetY * Math.sin(this.parentActor.rotation);
@@ -203,11 +267,12 @@ export class Hardpoint {
             this.timeSinceLastShot = 0;
         }
     }
+    
 }
 
-export class BeamHardpoint extends Hardpoint {
-    constructor({ scene, id, parentActor, x, y, classData = { rotationSpeed: 0.003, texture: "dev_mining_turret" } }) {
-        super({ scene, id, parentActor, x, y, classData: { rotationSpeed: 0.003, texture: "dev_mining_turret" } })
+export class BeamHardpoint extends ClientHardpoint {
+    constructor({ scene, id, parentActor, x, y, classData = hardpointData["devBeam"] }) {
+        super({ scene, id, parentActor, x, y, classData })
 
         this.beamSprite = null;
 
@@ -254,12 +319,16 @@ export class BeamHardpoint extends Hardpoint {
             // Get the beam sprite
             let beam = this.beamSprite;
     
-            // Update the position, rotation, and width of the beam sprite
-            let segmentX = this.worldX + Math.cos(angle) * (targetDistance / 2);
-            let segmentY = this.worldY + Math.sin(angle) * (targetDistance / 2);
-            beam.setPosition(segmentX, segmentY);
-            beam.rotation = angle;
-            beam.displayWidth = targetDistance;
+           // Get the starting position for the beam using the new method
+        const spawnPosition = this.getProjectileSpawnPosition();
+        console.log({spawnPosition})
+
+        // Update the position, rotation, and width of the beam sprite
+        let segmentX = spawnPosition.x + Math.cos(angle) * (targetDistance / 2);
+        let segmentY = spawnPosition.y + Math.sin(angle) * (targetDistance / 2);
+        beam.setPosition(segmentX, segmentY);
+        beam.rotation = angle;
+        beam.displayWidth = targetDistance;
     
             this.targetActor.takeDamage(this.damagePerHit);
         } else {
@@ -274,8 +343,8 @@ export class BeamHardpoint extends Hardpoint {
     }
 }
 
-export class ProjectileHardpoint extends Hardpoint {
-    constructor({ scene, id, parentActor, x, y, classData = { rotationSpeed: 0.003, texture: "dev_mining_turret" } }) {
+export class ProjectileHardpoint extends ClientHardpoint {
+    constructor({ scene, id, parentActor, x, y, classData = hardpointData["devBeam"] }) {
         super({ scene, id, parentActor, x, y, classData });
 
         this.bullets = [];
@@ -313,7 +382,7 @@ export class ProjectileHardpoint extends Hardpoint {
     fire() {
         if (this.targetActor && this.isFacingTarget()) {
             this.createBullet();
-            console.log(`Firing bullet at target ${this.targetActor.id}`);
+            //console.log(`Firing bullet at target ${this.targetActor.id}`);
         }
     }
 
