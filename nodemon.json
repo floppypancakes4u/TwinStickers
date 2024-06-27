@@ -1,0 +1,7 @@
+{
+    "watch": ["game/**/.*s", "shared/**/.*s", "static/**/.*s", "src/**/.*s"],
+    "ext": "js,ts", 
+    "exec": "npm run build-and-start",
+    "ignore": ["shared"]
+  }
+  

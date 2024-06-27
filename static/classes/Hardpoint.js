@@ -1,27 +1,9 @@
 import { distance } from "../shared/helpers.js";
 import { MathHelper } from "../shared/mathhelper.js";
-
-const hardpointData = {
-    "devBlaster": {
-        type: "Projectile",
-        rotationSpeed: 0.03,
-        texture: "dev_mining_turret", 
-        projectileOffsetX: 11, 
-        projectileOffsetY: 0,
-        damagerOffsets: [],
-    },
-    "devBeam": {
-        type: "Beam",
-        rotationSpeed: 0.03,
-        texture: "dev_mining_turret", 
-        projectileOffsetX: 11, 
-        projectileOffsetY: 0,
-        damagerOffsets: [],
-    }
-}
+import { HardpointDataTable } from "../shared/hardpointDataTable.js";
 
 export class Hardpoint {
-    constructor({ id, parentActor, x, y, classData = hardpointData["devBlaster"] }) {
+    constructor({ id, parentActor, x, y, classData = HardpointDataTable["devBlaster"] }) {
         this.id = id;
         this.parentActor = parentActor;
         this.targetActor = null;
@@ -48,7 +30,8 @@ export class Hardpoint {
 }
 
 export class ClientHardpoint extends Hardpoint {
-    constructor({ scene, id, parentActor, x, y, classData = hardpointData["devBlaster"] }) {
+    constructor({ scene, id, parentActor, x, y, classData = HardpointDataTable["devBlaster"] }) {
+        super({ id, parentActor, x, y, classData})
         this.scene = scene;
         this.id = id;
         this.parentActor = parentActor;
@@ -271,7 +254,7 @@ export class ClientHardpoint extends Hardpoint {
 }
 
 export class BeamHardpoint extends ClientHardpoint {
-    constructor({ scene, id, parentActor, x, y, classData = hardpointData["devBeam"] }) {
+    constructor({ scene, id, parentActor, x, y, classData = HardpointDataTable["devBeam"] }) {
         super({ scene, id, parentActor, x, y, classData })
 
         this.beamSprite = null;
