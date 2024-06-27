@@ -56,6 +56,8 @@ export class ClientHardpoint extends Hardpoint {
     }
     
     IncrementSpawnerIndex() {
+        if (!this.classData.alternateOffsets) return;
+        
         this.currentDamageSpawnerIndex++;
 
         if (this.currentDamageSpawnerIndex == this.damageSpawnPoints) {
