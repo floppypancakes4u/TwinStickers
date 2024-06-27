@@ -1,7 +1,6 @@
 {
-    "watch": ["game/**/.*s", "shared/**/.*s", "static/**/.*s", "src/**/.*s"],
-    "ext": "js,ts", 
-    "exec": "npm run build-and-start",
-    "ignore": ["shared"]
-  }
-  
+  "watch": ["src", "game", "static"],
+  "ext": "ts, js",
+  "exec": "npm run build && node index.js",
+  "ignore": ["dist"]
+}

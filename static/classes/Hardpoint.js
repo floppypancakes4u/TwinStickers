@@ -1,6 +1,6 @@
-import { distance } from "../shared/helpers.js";
+import { distance, log } from "../shared/helpers.js";
 import { MathHelper } from "../shared/mathhelper.js";
-import { HardpointDataTable } from "../shared/hardpointDataTable.js";
+import { HardpointDataTable } from "../shared/HardpointDataTable.js";
 
 export class Hardpoint {
     constructor({ id, parentActor, x, y, classData = HardpointDataTable["devBlaster"] }) {
@@ -13,6 +13,8 @@ export class Hardpoint {
         this.offsetY = y;
         this.projectileOffsetX = classData.projectileOffsetX;
         this.projectileOffsetY = classData.projectileOffsetY;
+        this.damageSpawnerOffsets = classData.damageSpawnerOffsets;
+        this.damageSpawnPoints = this.damageSpawnerOffsets.length
         this.rotationSpeed = classData.rotationSpeed; // Speed at which the hardpoint rotates towards its target, in radians per frame
     
         this.damagePerHit = 1;
@@ -33,37 +35,13 @@ export class ClientHardpoint extends Hardpoint {
     constructor({ scene, id, parentActor, x, y, classData = HardpointDataTable["devBlaster"] }) {
         super({ id, parentActor, x, y, classData})
         this.scene = scene;
-        this.id = id;
-        this.parentActor = parentActor;
-        this.targetActor = null;
-        this.worldX = 0;
-        this.worldY = 0;
-        this.offsetX = x;
-        this.offsetY = y;
-        this.projectileOffsetX = classData.projectileOffsetX;
-        this.projectileOffsetY = classData.projectileOffsetY;
-        this.rotationSpeed = classData.rotationSpeed; // Speed at which the hardpoint rotates towards its target, in radians per frame
-    
-
-        console.log({projectileOffsetX: this.projectileOffsetX, projectileOffsetY: this.projectileOffsetY})
-        this.damagePerHit = 1;
-        this.rateOfFire = 10; // 10 times a second.
-        this.timeSinceLastShot = 0; // Time tracker for rate of fire
-    
-        this.distance = 1000;  // max range of the hardpoint
-        this.baseRotation = 0;     // default rotation to face right
-        this.localRotation = this.baseRotation;     // default rotation to face right
-        this.firingAngle = 360;       // angle of the firing arc
-        this.drawFiringAngles = false;
-    
+            
         // Add sprite and set its initial rotation
         this.sprite = scene.add.sprite(0, 0, classData.texture);
         this.sprite.setOrigin(0.5, 0.5);
         this.sprite.rotation = MathHelper.DegToRad(this.localRotation); // aligns sprite to face right
     
         this.graphics = scene.add.graphics({ lineStyle: { width: 2, color: 0xffff00 } });
-    
-        this.active = false;
     }
 
     getProjectileSpawnPosition() {
@@ -75,7 +53,6 @@ export class ClientHardpoint extends Hardpoint {
         const projectileX = this.worldX + offsetX;
         const projectileY = this.worldY + offsetY;
     
-        console.log({pOX: this.projectileOffsetX, rot: this.sprite.rotation, offsetX, offsetY, projectileX, projectileY})
         return { x: projectileX, y: projectileY };
     }
     
@@ -172,7 +149,6 @@ export class ClientHardpoint extends Hardpoint {
 
             // Check if the target is within the dead zone
             if (Math.abs(relativeTargetAngle) > halfFiringAngleRadians) {
-                console.log('Target is in the dead zone of the hardpoint.');
                 setHardpointToHomePosition = true;
             }
         } else {
@@ -254,16 +230,16 @@ export class ClientHardpoint extends Hardpoint {
 }
 
 export class BeamHardpoint extends ClientHardpoint {
-    constructor({ scene, id, parentActor, x, y, classData = HardpointDataTable["devBeam"] }) {
+    constructor({ scene, id, parentActor, x, y, classData = HardpointDataTable["devDualBeam"] }) {
         super({ scene, id, parentActor, x, y, classData })
 
         this.beamSprite = null;
-
     }
 
     activateBeam() {
         // Check if we need to create a beam sprite
         if (this.beamSprite === null) {
+            log.info("Beam Activated")
             let beamSegment = this.scene.add.sprite(0, 0, 'dev_mining_turret_beam');
             beamSegment.play('beamAnimation'); // Assuming 'beamAnimation' is the key for the animation
             this.beamSprite = beamSegment;
@@ -304,7 +280,8 @@ export class BeamHardpoint extends ClientHardpoint {
     
            // Get the starting position for the beam using the new method
         const spawnPosition = this.getProjectileSpawnPosition();
-        console.log({spawnPosition})
+
+        log.info({spawnPosition})
 
         // Update the position, rotation, and width of the beam sprite
         let segmentX = spawnPosition.x + Math.cos(angle) * (targetDistance / 2);
@@ -327,7 +304,7 @@ export class BeamHardpoint extends ClientHardpoint {
 }
 
 export class ProjectileHardpoint extends ClientHardpoint {
-    constructor({ scene, id, parentActor, x, y, classData = hardpointData["devBeam"] }) {
+    constructor({ scene, id, parentActor, x, y, classData = HardpointDataTable["devBeam"] }) {
         super({ scene, id, parentActor, x, y, classData });
 
         this.bullets = [];

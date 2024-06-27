@@ -2,10 +2,10 @@
   "name": "express-simple-starter",
   "private": true,
   "scripts": {
-    "build": "tsc --outDir shared/ game/src/hardpointDataTable.ts",
-    "start": "node index.js",
+    "build": "tsc",
+    "start": "node dist/index.js",
     "build-and-start": "npm run build && npm run start",
-    "dev": "nodemon"
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'tsc && node index.js'"
   },
   "dependencies": {
     "chalk": "^5.3.0",

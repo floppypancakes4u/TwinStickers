@@ -2,14 +2,16 @@
 
 interface DamagerOffset {
   x: number;
-  o: number;
+  y: number;
 }
 
 interface Hardpoint {
   type: string;
   rotationSpeed: number;
   texture: string;
-  damagerOffsets: DamagerOffset[];
+  damageSpawnerOffsets: DamagerOffset[];
+  alternateOffsets: boolean;
+  useAllOffsetsSimul
 }
 
 interface HardpointData {
@@ -21,12 +23,21 @@ export const HardpointDataTable: HardpointData = {
       type: "Projectile",
       rotationSpeed: 0.03,
       texture: "dev_mining_turret",
-      damagerOffsets: [ {x: 11, o: 0 } ],
+      damageSpawnerOffsets: [ {x: 11, y: 0 } ],
+      alternateOffsets: false,
     },
     devBeam: {
       type: "Beam",
       rotationSpeed: 0.041,
       texture: "dev_mining_turret",
-      damagerOffsets: [ {x: 11, o: 0 } ],
+      damageSpawnerOffsets: [ {x: 11, y: 0 } ],
+      alternateOffsets: false,
+    },
+    devDualBeam: {
+      type: "Beam",
+      rotationSpeed: 0.041,
+      texture: "dev_mining_turret",
+      damageSpawnerOffsets: [ {x: 11, y: -4 }, {x: 11, y: 4 } ],
+      alternateOffsets: false,
     },
 };
