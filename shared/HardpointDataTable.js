@@ -22,3 +22,4 @@ export const HardpointDataTable = {
         alternateOffsets: true,
     },
 };
+//# sourceMappingURL=HardpointDataTable.js.map

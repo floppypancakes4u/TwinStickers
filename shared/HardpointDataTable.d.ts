@@ -1,4 +1,4 @@
-export interface DamagerOffset {
+interface DamagerOffset {
     x: number;
     y: number;
 }
@@ -9,8 +9,8 @@ export interface HardpointDataTableEntry {
     damageSpawnerOffsets: DamagerOffset[];
     alternateOffsets: boolean;
 }
-export interface HardpointData {
+interface HardpointData {
     [key: string]: HardpointDataTableEntry;
 }
 export declare const HardpointDataTable: HardpointData;
-//# sourceMappingURL=HardpointDataTable.d.ts.map
+export {};

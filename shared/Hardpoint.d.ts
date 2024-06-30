@@ -1,4 +1,3 @@
-import { HardpointDataTableEntry } from 'HardpointDataTable';
 interface HardpointConstructor {
     id: any;
     parentActor: any;
@@ -6,7 +5,7 @@ interface HardpointConstructor {
     y: number;
     classData?: HardpointDataTableEntry;
 }
-export declare class TSHardPoint {
+export declare class HardPoint {
     private id;
     private parentActor;
     private targetActor;
@@ -28,7 +27,28 @@ export declare class TSHardPoint {
     private drawFiringAngles;
     private active;
     constructor({ id, parentActor, x, y, classData }: HardpointConstructor);
+    private setRotation;
+    private handleHardpointLocalRotation;
+    private IncrementSpawnerIndex;
+    private isFacingTarget;
+    private getProjectileSpawnPosition;
     activate(): void;
+    deactivate(): void;
+    setTarget(actor: any): void;
 }
+interface DamagerOffset {
+    x: number;
+    y: number;
+}
+export interface HardpointDataTableEntry {
+    type: string;
+    rotationSpeed: number;
+    texture: string;
+    damageSpawnerOffsets: DamagerOffset[];
+    alternateOffsets: boolean;
+}
+interface HardpointData {
+    [key: string]: HardpointDataTableEntry;
+}
+export declare const HardpointDataTable: HardpointData;
 export {};
-//# sourceMappingURL=Hardpoint.d.ts.map
