@@ -150,6 +150,27 @@ export class HardPoint {
 
 		return { x: projectileX, y: projectileY };
 	}
+
+	private update(deltaTime: number): void {
+		const offsetX = this.offsetX * Math.cos(this.parentActor.rotation) - this.offsetY * Math.sin(this.parentActor.rotation);
+		const offsetY = this.offsetX * Math.sin(this.parentActor.rotation) + this.offsetY * Math.cos(this.parentActor.rotation);
+
+		this.worldX = this.parentActor.x + offsetX;
+		this.worldY = this.parentActor.y + offsetY;
+
+		//this.sprite.setPosition(this.worldX, this.worldY);
+
+		this.handleHardpointLocalRotation();
+		//this.updateSpriteToLocalRotation();
+		//this.drawAngledArc();
+				
+		// Handle firing according to rate of fire
+		this.timeSinceLastShot += deltaTime;
+		if (this.timeSinceLastShot >= 1000 / this.rateOfFire) {
+				this.fire();
+				this.timeSinceLastShot = 0;
+		}
+}
   // private getProjectileSpawnPosition(): Vector2d {
   //   // Calculate the offset position based on the hardpoint's rotation
   //   const offsetX = this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].x * Math.cos(this.localRotation) - this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].y * Math.sin(this.localRotation);
@@ -184,9 +205,15 @@ export class HardPoint {
     } else {
         this.activate();
     }
-
-    console.log("Updated actor to", this.targetActor)
   }
+
+	public fire(): void {
+		if (this.targetActor && this.isFacingTarget()) {
+				this.targetActor.takeDamage(this.damagePerHit);
+
+				this.IncrementSpawnerIndex()
+		}
+	} 
 }
 
 

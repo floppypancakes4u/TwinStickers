@@ -16,42 +16,6 @@ export class ClientHardpoint extends HardPoint {
         this.graphics = scene.add.graphics({ lineStyle: { width: 2, color: 0xffff00 } });
     }
 
-    //  getProjectileSpawnPosition() {
-    //      // Calculate the offset position based on the hardpoint's rotation
-    //      const offsetX = this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].x * Math.cos(this.sprite.rotation) - this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].y * Math.sin(this.sprite.rotation);
-    //      const offsetY = this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].x * Math.sin(this.sprite.rotation) + this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].y * Math.cos(this.sprite.rotation);
-    
-    //      // Calculate the world position for the projectile spawn
-    //      const projectileX = this.worldX + offsetX;
-    //      const projectileY = this.worldY + offsetY;
-    
-    //      return { x: projectileX, y: projectileY };
-    //  }
-    
-    // IncrementSpawnerIndex() {
-    //     if (!this.classData.alternateOffsets) return;
-        
-    //     this.currentDamageSpawnerIndex++;
-
-    //     if (this.currentDamageSpawnerIndex == this.damageSpawnPoints) {
-    //         this.currentDamageSpawnerIndex = 0;
-    //     }
-    // }
-    
-    // setRotation(degrees) {
-    //     this.localRotation = degrees;
-    // }
-
-    // setTarget(actor) {
-    //     this.targetActor = actor;
-
-    //     if (actor === null) {
-    //         this.deactivate();
-    //     } else {
-    //         this.activate();
-    //     }
-    // }
-
     setVisibility(state) {
         this.sprite.setVisible(state);
         this.graphics.setVisible(state);
@@ -111,101 +75,7 @@ export class ClientHardpoint extends HardPoint {
                 this.texts[incDistance] = text; // Store text object for future management
             }
         }
-    }
-
-    // handleHardpointLocalRotation() {
-    //     // Get the base rotation from the parent actor
-    //     let baseAngle = this.parentActor.rotation;
-    //     let currentAngle = baseAngle + MathHelper.DegToRad(this.localRotation);
-    //     let deltaAngle;
-    //     let setHardpointToHomePosition = false;
-    //     if (this.targetActor) {
-    //         // Calculate the angle from the hardpoint to the target
-    //         let targetAngle = Math.atan2(this.targetActor.y - this.worldY, this.targetActor.x - this.worldX);
-    //         deltaAngle = MathHelper.Angle.Wrap(targetAngle - currentAngle);
-
-    //         // Calculate the half angle of the firing arc in radians
-    //         let halfFiringAngleRadians = MathHelper.DegToRad(this.firingAngle / 2);
-    //         let relativeTargetAngle = MathHelper.Angle.Wrap(targetAngle - baseAngle);
-
-    //         // Check if the target is within the dead zone
-    //         if (Math.abs(relativeTargetAngle) > halfFiringAngleRadians) {
-    //             setHardpointToHomePosition = true;
-    //         }
-    //     } else {
-    //         setHardpointToHomePosition = true;
-    //     }
-
-    //     if (setHardpointToHomePosition) {
-    //         // Gradually rotate back to the home position (0 degrees) if no target
-    //         deltaAngle = MathHelper.Angle.Wrap(baseAngle - currentAngle);
-    //     }
-
-    //     // Calculate the maximum allowable rotation per frame, clamped by rotationSpeed
-    //     let rotationChange = MathHelper.Clamp(deltaAngle, -this.rotationSpeed, this.rotationSpeed);
-
-    //     // Apply the rotation change
-    //     let newLocalRotationRadians = MathHelper.Angle.Wrap(currentAngle + rotationChange);
-    //     this.setRotation(MathHelper.RadToDeg(newLocalRotationRadians - baseAngle));
-    // }
-    
-    // activate() {
-    //     if (this.active) return;
-    //     this.active = true;    
-    //     //console.log("Hardpoint activated");
-    // }
-    
-    // deactivate() {
-    //     if (!this.active) return;
-    //     this.active = false;
-    // }
-   
-    // isFacingTarget() {
-    //     if (!this.targetActor) return false;
-    
-    //     // Calculate the angle from the hardpoint to the target
-    //     let targetAngle = Math.atan2(this.targetActor.y - this.worldY, this.targetActor.x - this.worldX);
-    //     let currentAngle = this.sprite.rotation;
-    
-    //     // Normalize angles to the range [-PI, PI]
-    //     targetAngle = MathHelper.Angle.Wrap(targetAngle);
-    //     currentAngle = MathHelper.Angle.Wrap(currentAngle);
-    
-    //     // Calculate the absolute difference between the target angle and the current angle
-    //     let angleDifference = MathHelper.Angle.Wrap(targetAngle - currentAngle);    
-    //     let facingTarget = Math.abs(angleDifference) <= 0.01;    
-    
-    //     return facingTarget;
-    // }  
-
-    // Converted to not use this.sprite.rotation
-    // isFacingTarget() {
-    //     if (!this.targetActor) return false;
-    
-    //     // Calculate the angle from the hardpoint to the target in radians
-    //     let targetAngle = Math.atan2(this.targetActor.y - this.worldY, this.targetActor.x - this.worldX);
-    //     let currentAngle = MathHelper.DegToRad(this.localRotation);
-    //     console.log(this.localRotation, currentAngle);
-    
-    //     // Normalize angles to the range [-PI, PI]
-    //     targetAngle = MathHelper.Angle.Wrap(targetAngle);
-    //     currentAngle = MathHelper.Angle.Wrap(currentAngle);
-    
-    //     // Calculate the absolute difference between the target angle and the current angle
-    //     let angleDifference = MathHelper.Angle.Wrap(targetAngle - currentAngle);
-    //     let facingTarget = Math.abs(angleDifference) <= 0.01;
-    
-    //     return facingTarget;
-    // }
-    
-
-    fire() {
-        if (this.targetActor && this.isFacingTarget()) {
-            this.targetActor.takeDamage(this.damagePerHit);
-
-            this.IncrementSpawnerIndex()
-        }
-    }   
+    }    
 
     updateSpriteToLocalRotation() {
         // Update the sprite rotation to match the local rotation
@@ -213,26 +83,12 @@ export class ClientHardpoint extends HardPoint {
     }
 
     update(deltaTime) {
-        const offsetX = this.offsetX * Math.cos(this.parentActor.rotation) - this.offsetY * Math.sin(this.parentActor.rotation);
-        const offsetY = this.offsetX * Math.sin(this.parentActor.rotation) + this.offsetY * Math.cos(this.parentActor.rotation);
-    
-        this.worldX = this.parentActor.x + offsetX;
-        this.worldY = this.parentActor.y + offsetY;
-    
+        super.update(deltaTime);
         this.sprite.setPosition(this.worldX, this.worldY);
     
-        this.handleHardpointLocalRotation();
         this.updateSpriteToLocalRotation();
         this.drawAngledArc();
-            
-        // Handle firing according to rate of fire
-        this.timeSinceLastShot += deltaTime;
-        if (this.timeSinceLastShot >= 1000 / this.rateOfFire) {
-            this.fire();
-            this.timeSinceLastShot = 0;
-        }
-    }
-    
+    }    
 }
 
 export class BeamHardpoint extends ClientHardpoint {

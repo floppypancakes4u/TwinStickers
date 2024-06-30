@@ -32,9 +32,11 @@ export declare class HardPoint {
     private IncrementSpawnerIndex;
     private isFacingTarget;
     private getProjectileSpawnPosition;
+    private update;
     activate(): void;
     deactivate(): void;
     setTarget(actor: any): void;
+    fire(): void;
 }
 interface DamagerOffset {
     x: number;
