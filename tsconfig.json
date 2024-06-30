@@ -1,13 +1,15 @@
 {
-    "compilerOptions": {
-      "module": "ES6",
-      "target": "ES6",
-      "outDir": "./shared",
-      "rootDir": "./src",
-      "strict": true,
-      "esModuleInterop": true,
-      "skipLibCheck": true
-    },
-    "include": ["src/**/*"]
-  }
-  
+  "compilerOptions": {
+    "module": "ES6",
+    "target": "ES6",
+    "outDir": "./shared",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationMap": true
+  },
+  "include": ["src/**/*"]
+}

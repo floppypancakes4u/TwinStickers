@@ -1,11 +1,11 @@
 // src/hardpointData.ts
 
-interface DamagerOffset {
+export interface DamagerOffset {
   x: number;
   y: number;
 }
 
-interface Hardpoint {
+export interface HardpointDataTableEntry {
   type: string;
   rotationSpeed: number;
   texture: string;
@@ -13,8 +13,8 @@ interface Hardpoint {
   alternateOffsets: boolean;
 }
 
-interface HardpointData {
-  [key: string]: Hardpoint;
+export interface HardpointData {
+  [key: string]: HardpointDataTableEntry;
 }
   
 export const HardpointDataTable: HardpointData = {
