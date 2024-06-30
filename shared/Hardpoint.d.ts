@@ -6,7 +6,7 @@ interface HardpointConstructor {
     y: number;
     classData?: HardpointDataTableEntry;
 }
-export declare class Hardpoint {
+export declare class TSHardPoint {
     private id;
     private parentActor;
     private targetActor;

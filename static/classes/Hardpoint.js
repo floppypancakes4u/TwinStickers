@@ -1,8 +1,9 @@
 import { distance, log } from "../shared/helpers.js";
 import { MathHelper } from "../shared/mathhelper.js";
 import { HardpointDataTable } from "../shared/HardpointDataTable.js";
+import { TSHardPoint } from "../../src/Hardpoint.ts"
 
-export class Hardpoint {
+export class Hardpoint extends TSHardPoint {
     constructor({ id, parentActor, x, y, classData = HardpointDataTable["devBlaster"] }) {
         this.id = id;
         this.parentActor = parentActor;

@@ -10,7 +10,7 @@ interface HardpointConstructor {
   classData?: HardpointDataTableEntry;
 }
 
-export class Hardpoint {
+export class TSHardPoint {
   private id: any;
   private parentActor: any;
   private targetActor: any | null;
