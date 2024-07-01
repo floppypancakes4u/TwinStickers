@@ -52,7 +52,6 @@ export class ServerPlayerController {
 
   destroy() {
     if (this.actor) {
-      console.log("ActorManagerServer", ActorManagerServer)
       ActorManagerServer.deleteActor(this.socket, this.actor);
       this.actor = null;
     }

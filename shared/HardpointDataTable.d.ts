@@ -6,6 +6,8 @@ export interface HardpointDataTableEntry {
     type: string;
     rotationSpeed: number;
     texture: string;
+    rateOfFire: number;
+    damagePerHit: number;
     damageSpawnerOffsets: DamagerOffset[];
     alternateOffsets: boolean;
 }

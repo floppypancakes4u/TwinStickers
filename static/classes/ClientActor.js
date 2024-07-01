@@ -2,7 +2,7 @@ import { FlightBaseActor } from './BaseActor.js'
 import { MovementComponent } from '../shared/MovementComponent.js';
 import { InteractionComponent } from './InteractionComponent.js';
 import { Engine } from './Engine.js';
-import { BeamHardpoint, ProjectileHardpoint } from './Hardpoint.js';
+import { BeamHardpoint, ProjectileHardpoint } from './ClientHardpoint.js';
 import { log } from '../shared/Helpers.js'
 
 const BRAKING_DISTANCE = 100;

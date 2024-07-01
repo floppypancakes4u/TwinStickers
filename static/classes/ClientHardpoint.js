@@ -1,7 +1,7 @@
 import { distance, log } from "../shared/Helpers.js";
 import { MathHelper } from "../shared/MathHelper.js";
-//import { HardpointDataTable } from "../shared/HardpointDataTable.js";
-import { HardPoint, HardpointDataTable } from "../shared/Hardpoint.js"
+import { HardpointDataTable } from "../shared/HardpointDataTable.js";
+import { HardPoint } from "../shared/Hardpoint.js"
 
 export class ClientHardpoint extends HardPoint {
     constructor({ scene, id, parentActor, x, y, classData = HardpointDataTable["devBlaster"] }) {

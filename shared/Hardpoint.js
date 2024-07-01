@@ -1,5 +1,5 @@
 // src/hardpoint.ts
-//import { HardpointDataTable, HardpointDataTableEntry } from './HardpointDataTable.js';
+import { HardpointDataTable } from './HardpointDataTable.js';
 import { MathHelper } from "./MathHelper.js";
 export class HardPoint {
     constructor({ id, parentActor, x, y, classData = HardpointDataTable["devBlaster"] }) {
@@ -27,19 +27,15 @@ export class HardPoint {
         this.localRotation = degrees;
     }
     handleHardpointLocalRotation() {
-        // Get the base rotation from the parent actor
         let baseAngle = this.parentActor.rotation;
         let currentAngle = baseAngle + MathHelper.DegToRad(this.localRotation);
         let deltaAngle = 0;
         let setHardpointToHomePosition = false;
         if (this.targetActor) {
-            // Calculate the angle from the hardpoint to the target
             let targetAngle = Math.atan2(this.targetActor.y - this.worldY, this.targetActor.x - this.worldX);
             deltaAngle = MathHelper.Angle.Wrap(targetAngle - currentAngle);
-            // Calculate the half angle of the firing arc in radians
             let halfFiringAngleRadians = MathHelper.DegToRad(this.firingAngle / 2);
             let relativeTargetAngle = MathHelper.Angle.Wrap(targetAngle - baseAngle);
-            // Check if the target is within the dead zone
             if (Math.abs(relativeTargetAngle) > halfFiringAngleRadians) {
                 setHardpointToHomePosition = true;
             }
@@ -48,12 +44,9 @@ export class HardPoint {
             setHardpointToHomePosition = true;
         }
         if (setHardpointToHomePosition) {
-            // Gradually rotate back to the home position (0 degrees) if no target
             deltaAngle = MathHelper.Angle.Wrap(baseAngle - currentAngle);
         }
-        // Calculate the maximum allowable rotation per frame, clamped by rotationSpeed
         let rotationChange = MathHelper.Clamp(deltaAngle, -this.classData.rotationSpeed, this.classData.rotationSpeed);
-        // Apply the rotation change
         let newLocalRotationRadians = MathHelper.Angle.Wrap(currentAngle + rotationChange);
         this.setRotation(MathHelper.RadToDeg(newLocalRotationRadians - baseAngle));
     }
@@ -68,15 +61,13 @@ export class HardPoint {
     isFacingTarget() {
         if (!this.targetActor)
             return false;
-        // Calculate the angle from the hardpoint to the target in radians
         let targetAngle = Math.atan2(this.targetActor.y - this.worldY, this.targetActor.x - this.worldX);
         let currentAngle = MathHelper.DegToRad(this.localRotation);
-        // Normalize angles to the range [-PI, PI]
         targetAngle = MathHelper.Angle.Wrap(targetAngle);
         currentAngle = MathHelper.Angle.Wrap(currentAngle);
-        // Calculate the absolute difference between the target angle and the current angle
         let angleDifference = MathHelper.Angle.Wrap(targetAngle - currentAngle);
-        let facingTarget = Math.abs(angleDifference) <= 0.01;
+        let facingTarget = Math.abs(angleDifference) <= 0.1;
+        console.log(Math.abs(angleDifference));
         return facingTarget;
     }
     getProjectileSpawnPosition() {
@@ -97,10 +88,7 @@ export class HardPoint {
         const offsetY = this.offsetX * Math.sin(this.parentActor.rotation) + this.offsetY * Math.cos(this.parentActor.rotation);
         this.worldX = this.parentActor.x + offsetX;
         this.worldY = this.parentActor.y + offsetY;
-        //this.sprite.setPosition(this.worldX, this.worldY);
         this.handleHardpointLocalRotation();
-        //this.updateSpriteToLocalRotation();
-        //this.drawAngledArc();
         // Handle firing according to rate of fire
         this.timeSinceLastShot += deltaTime;
         if (this.timeSinceLastShot >= 1000 / this.classData.rateOfFire) {
@@ -140,39 +128,11 @@ export class HardPoint {
         }
     }
     fire() {
+        console.log(this.isFacingTarget(), this.active);
         if (this.targetActor && this.isFacingTarget() && this.active) {
             this.IncrementSpawnerIndex();
             this.targetActor.takeDamage(this.classData.damagePerHit);
         }
     }
 }
-export const HardpointDataTable = {
-    devBlaster: {
-        type: "Projectile",
-        rotationSpeed: 0.03,
-        texture: "dev_mining_turret",
-        rateOfFire: 3,
-        damagePerHit: 1,
-        damageSpawnerOffsets: [{ x: 11, y: 0 }],
-        alternateOffsets: false,
-    },
-    devBeam: {
-        type: "Beam",
-        rotationSpeed: 0.041,
-        texture: "dev_mining_turret",
-        rateOfFire: 10,
-        damagePerHit: 1,
-        damageSpawnerOffsets: [{ x: 11, y: 0 }],
-        alternateOffsets: false,
-    },
-    devDualBeam: {
-        type: "Beam",
-        rotationSpeed: 0.041,
-        texture: "dev_mining_turret",
-        rateOfFire: 10,
-        damagePerHit: 1,
-        damageSpawnerOffsets: [{ x: 11, y: -4 }, { x: 11, y: 4 }],
-        alternateOffsets: true,
-    },
-};
 //# sourceMappingURL=Hardpoint.js.map

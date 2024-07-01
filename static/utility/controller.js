@@ -105,9 +105,9 @@ export class Controller {
       pointer.x,
       pointer.y
     );
-    console.log(
-      `Right-clicked at world coordinates: (${worldPoint.x}, ${worldPoint.y})`, objects
-    );
+    // console.log(
+    //   `Right-clicked at world coordinates: (${worldPoint.x}, ${worldPoint.y})`, objects
+    // );
 
     // Check for objects at the clicked coordinates
     // const clickedObjects = this.scene.children.list.filter((child) => {
