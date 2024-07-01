@@ -16,15 +16,11 @@ export declare class HardPoint {
     private classData;
     private damageSpawnPoints;
     private currentDamageSpawnerIndex;
-    private rotationSpeed;
-    private damagePerHit;
-    private rateOfFire;
     private timeSinceLastShot;
     private distance;
     private baseRotation;
     private localRotation;
     private firingAngle;
-    private drawFiringAngles;
     private active;
     constructor({ id, parentActor, x, y, classData }: HardpointConstructor);
     private setRotation;
@@ -46,6 +42,8 @@ export interface HardpointDataTableEntry {
     type: string;
     rotationSpeed: number;
     texture: string;
+    rateOfFire: number;
+    damagePerHit: number;
     damageSpawnerOffsets: DamagerOffset[];
     alternateOffsets: boolean;
 }

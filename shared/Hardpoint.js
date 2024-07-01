@@ -13,15 +13,14 @@ export class HardPoint {
         this.classData = classData;
         this.damageSpawnPoints = this.classData.damageSpawnerOffsets.length;
         this.currentDamageSpawnerIndex = 0;
-        this.rotationSpeed = classData.rotationSpeed; // Speed at which the hardpoint rotates towards its target, in radians per frame
-        this.damagePerHit = 1;
-        this.rateOfFire = 10; // 10 times a second.
+        //this.rotationSpeed = classData.rotationSpeed; // Speed at which the hardpoint rotates towards its target, in radians per frame
+        //this.damagePerHit = 1;
+        //this.rateOfFire = 10; // 10 times a second.
         this.timeSinceLastShot = 0; // Time tracker for rate of fire
         this.distance = 1000; // max range of the hardpoint
         this.baseRotation = 0; // default rotation to face right
         this.localRotation = this.baseRotation; // default rotation to face right
         this.firingAngle = 360; // angle of the firing arc
-        this.drawFiringAngles = false;
         this.active = false;
     }
     setRotation(degrees) {
@@ -54,7 +53,7 @@ export class HardPoint {
             deltaAngle = MathHelper.Angle.Wrap(baseAngle - currentAngle);
         }
         // Calculate the maximum allowable rotation per frame, clamped by rotationSpeed
-        let rotationChange = MathHelper.Clamp(deltaAngle, -this.rotationSpeed, this.rotationSpeed);
+        let rotationChange = MathHelper.Clamp(deltaAngle, -this.classData.rotationSpeed, this.classData.rotationSpeed);
         // Apply the rotation change
         let newLocalRotationRadians = MathHelper.Angle.Wrap(currentAngle + rotationChange);
         this.setRotation(MathHelper.RadToDeg(newLocalRotationRadians - baseAngle));
@@ -105,7 +104,7 @@ export class HardPoint {
         //this.drawAngledArc();
         // Handle firing according to rate of fire
         this.timeSinceLastShot += deltaTime;
-        if (this.timeSinceLastShot >= 1000 / this.rateOfFire) {
+        if (this.timeSinceLastShot >= 1000 / this.classData.rateOfFire) {
             this.fire();
             this.timeSinceLastShot = 0;
         }
@@ -144,7 +143,7 @@ export class HardPoint {
     }
     fire() {
         if (this.targetActor && this.isFacingTarget()) {
-            this.targetActor.takeDamage(this.damagePerHit);
+            this.targetActor.takeDamage(this.classData.damagePerHit);
             this.IncrementSpawnerIndex();
         }
     }
@@ -154,6 +153,8 @@ export const HardpointDataTable = {
         type: "Projectile",
         rotationSpeed: 0.03,
         texture: "dev_mining_turret",
+        rateOfFire: 10,
+        damagePerHit: 1,
         damageSpawnerOffsets: [{ x: 11, y: 0 }],
         alternateOffsets: false,
     },
@@ -161,6 +162,8 @@ export const HardpointDataTable = {
         type: "Beam",
         rotationSpeed: 0.041,
         texture: "dev_mining_turret",
+        rateOfFire: 10,
+        damagePerHit: 1,
         damageSpawnerOffsets: [{ x: 11, y: 0 }],
         alternateOffsets: false,
     },
@@ -168,6 +171,8 @@ export const HardpointDataTable = {
         type: "Beam",
         rotationSpeed: 0.041,
         texture: "dev_mining_turret",
+        rateOfFire: 10,
+        damagePerHit: 1,
         damageSpawnerOffsets: [{ x: 11, y: -4 }, { x: 11, y: 4 }],
         alternateOffsets: true,
     },

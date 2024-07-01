@@ -8,6 +8,8 @@ export class ClientHardpoint extends HardPoint {
         super({ id, parentActor, x, y, classData})
         this.scene = scene;
             
+        this.drawFiringAngles = false;
+        
         // Add sprite and set its initial rotation
         this.sprite = scene.add.sprite(0, 0, classData.texture);
         this.sprite.setOrigin(0.5, 0.5);
@@ -42,6 +44,7 @@ export class ClientHardpoint extends HardPoint {
         Object.keys(this.texts).forEach(key => {
             this.texts[key].destroy();
         });
+
         this.texts = {}; // Reset the text dictionary after clearing
 
         for (let incDistance = 0; incDistance <= this.distance; incDistance += interval) {
