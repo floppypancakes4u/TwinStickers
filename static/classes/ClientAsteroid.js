@@ -1,7 +1,7 @@
 import { BaseActor } from './BaseActor.js';
 import { MovementComponent } from '../shared/MovementComponent.js';
 import { InteractionComponent } from './InteractionComponent.js';
-import { log, rgbToHex, getRandomInt } from '../shared/helpers.js'
+import { log, rgbToHex, getRandomInt } from '../shared/Helpers.js'
 
 export class ClientAsteroid extends BaseActor {
     constructor({ scene, x, y, velocity, rotation, className, classData = {} }) {
@@ -160,7 +160,6 @@ export class ClientAsteroid extends BaseActor {
         this.heat = Math.min(100, this.heat + amount * this.heatTransitionSpeed);
         this.lastDamageTime = Date.now();
     
-        console.log("roid heat:", this.heat)
         if (this.heat >= 100) {
             console.log("Asteroid heat is at maximum!");
         }

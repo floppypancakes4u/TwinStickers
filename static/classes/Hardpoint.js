@@ -1,4 +1,4 @@
-import { distance, log } from "../shared/helpers.js";
+import { distance, log } from "../shared/Helpers.js";
 import { MathHelper } from "../shared/MathHelper.js";
 //import { HardpointDataTable } from "../shared/HardpointDataTable.js";
 import { HardPoint, HardpointDataTable } from "../shared/Hardpoint.js"

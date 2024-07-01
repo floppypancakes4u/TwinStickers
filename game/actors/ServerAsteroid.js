@@ -1,4 +1,4 @@
-import { getRandomInt, degToRad, rgbToHex } from "../../shared/helpers.js";
+import { getRandomInt, degToRad, rgbToHex } from "../../shared/Helpers.js";
 import { ReplicatedActorBase } from "./ReplicatedActorBase.js";
 
 export class ServerAsteroid extends ReplicatedActorBase {

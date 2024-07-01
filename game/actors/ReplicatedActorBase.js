@@ -5,7 +5,7 @@ from "../../shared/MovementComponent.js"
 import {
   log
 }
-from '../../shared/helpers.js';
+from '../../shared/Helpers.js';
 
 const BRAKING_DISTANCE = 100;
 

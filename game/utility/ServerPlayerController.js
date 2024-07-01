@@ -1,5 +1,5 @@
 import { ServerActor } from '../actors/ServerActor.js';
-import { log } from '../../shared/helpers.js';
+import { log } from '../../shared/Helpers.js';
 
 export class ServerPlayerController {
   constructor(socket, actorManager) {

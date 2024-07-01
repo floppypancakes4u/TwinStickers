@@ -1,4 +1,4 @@
-import { log } from '../shared/helpers.js';
+import { log } from '../shared/Helpers.js';
 import { ClientActor } from '../classes/ClientActor.js';
 import { ClientAsteroid } from '../classes/ClientAsteroid.js';
 

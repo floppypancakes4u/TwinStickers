@@ -1,6 +1,6 @@
 import {MovementComponent} from '../shared/MovementComponent.js';
 import {InteractionComponent} from './InteractionComponent.js';
-import {log} from '../shared/helpers.js'
+import {log} from '../shared/Helpers.js'
 import { ActorManagerClient } from '../utility/ActorManagerClient.js';
 
 const BRAKING_DISTANCE = 100;

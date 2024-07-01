@@ -1,4 +1,4 @@
-import { log } from "./helpers.js";
+import { log } from "./Helpers.js";
 
 const ROTATION_STEP = 0.1; // Step size for rotation adjustments
 const DECELERATION_THRESHOLD = 50; // Distance threshold for deceleration

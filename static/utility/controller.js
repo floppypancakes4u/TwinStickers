@@ -1,4 +1,4 @@
-import { log } from '../shared/helpers.js';
+import { log } from '../shared/Helpers.js';
 import Camera from './camera.js';
 import { ActorManagerClient } from './ActorManagerClient.js';
 

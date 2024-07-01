@@ -1,5 +1,5 @@
-//import { log } from '../../shared/helpers.js';
-import { log } from '../shared/helpers.js';
+//import { log } from '../../shared/Helpers.js';
+import { log } from '../shared/Helpers.js';
 import { ActorManagerClient } from '../utility/ActorManagerClient.js';
 
 export class InteractionComponent {

@@ -2,11 +2,9 @@
 
 //import { HardpointDataTable, HardpointDataTableEntry } from './HardpointDataTable';
 import { MathHelper } from "MathHelper";
+import { Vector2d } from "./Helpers";
 
-interface Vector2d {
-  x: number,
-  y: number
-}
+
 
 interface HardpointConstructor {
   id: any;

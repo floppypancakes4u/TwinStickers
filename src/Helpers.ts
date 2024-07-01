@@ -1,9 +1,7 @@
-//import { bgBlue, bgGreen } from "./colors.js";
-
 const isNode = typeof process !== 'undefined' && process.versions != null && process.versions.node != null;
 
 // Define color and style codes for Node.js (ANSI escape codes) and browser (CSS styles)
-const colors = {
+const colors: { [key: string]: string } = {
     gray: isNode ? '\x1b[90m' : 'color: gray',
     white: isNode ? '\x1b[97m' : 'color: white',
     green: isNode ? '\x1b[92m' : 'color: green',
@@ -24,16 +22,22 @@ const colors = {
     strikethrough: isNode ? '\x1b[9m' : 'text-decoration: line-through'
 };
 
-const getTimestamp = () => {
+
+const getTimestamp = (): string => {
     const now = new Date();
     return now.toISOString();
 };
 
-// Base logging function
-const baseLog = (level, ...args) => {
+// Define the type for the log level
+interface LogLevel {
+    text: string;
+    style: keyof typeof colors;
+}
+
+const baseLog = (level: LogLevel, ...args: any[]): void => {
     // Prepend the timestamp with gray color
-    const timestamp = { text: `${getTimestamp()}`, style: 'gray' };
-    const side = { text: isNode ? "[SERVER]" : "[CLIENT]", style: isNode ? 'bgBlue' : 'bgGreen' }
+    const timestamp: LogLevel = { text: `${getTimestamp()}`, style: 'gray' };
+    const side: LogLevel = { text: isNode ? "[SERVER]" : "[CLIENT]", style: isNode ? 'bgBlue' : 'bgGreen' };
     const levelStyle = level.style;
 
     if (isNode) {
@@ -64,15 +68,15 @@ const baseLog = (level, ...args) => {
 
 // Define logging levels and colorize function
 export const log = {
-    debug: (...args) => baseLog({ text: '[DEBUG]', style: 'gray' }, ...args),
-    info: (...args) => baseLog({ text: '[INFO]', style: 'green' }, ...args),
-    warning: (...args) => baseLog({ text: '[WARNING]', style: 'yellow' }, ...args),
-    error: (...args) => baseLog({ text: '[ERROR]', style: 'red' }, ...args),
-    critical: (...args) => baseLog({ text: '[CRITICAL]', style: 'bgOrange' }, ...args),
-    hack: (...args) => baseLog({ text: '[CHEAT/HACK ATTEMPT]', style: 'bgRed' }, ...args),
-    custom: (level, style, ...args) => baseLog({ text: `[${level.toUpperCase()}]`, style }, ...args),
+    debug: (...args: any[]) => baseLog({ text: '[DEBUG]', style: 'gray' }, ...args),
+    info: (...args: any[]) => baseLog({ text: '[INFO]', style: 'green' }, ...args),
+    warning: (...args: any[]) => baseLog({ text: '[WARNING]', style: 'yellow' }, ...args),
+    error: (...args: any[]) => baseLog({ text: '[ERROR]', style: 'red' }, ...args),
+    critical: (...args: any[]) => baseLog({ text: '[CRITICAL]', style: 'bgOrange' }, ...args),
+    hack: (...args: any[]) => baseLog({ text: '[CHEAT/HACK ATTEMPT]', style: 'bgRed' }, ...args),
+    custom: (level: string, style: keyof typeof colors, ...args: any[]) => baseLog({ text: `[${level.toUpperCase()}]`, style }, ...args),
 
-    colorize: (text, style) => {
+    colorize: (text: string, style: keyof typeof colors): string => {
         if (isNode) {
             return `${colors[style]}${text}${colors.reset}`;
         } else {
@@ -81,21 +85,26 @@ export const log = {
     }
 };
 
-export function distance(actorjuan, actortwo) {
-    const dx = actorjuan.x - actortwo.x;
-    const dy = actorjuan.y - actortwo.y;
-    return Math.sqrt(dx * dx + dy * dy);
-  }
+export interface Vector2d {
+    x: number,
+    y: number
+}
 
-export function rgbToHex(r, g, b) {
+export function distance(vectorjuan: Vector2d, victortwo: Vector2d): number {
+    const dx = vectorjuan.x - victortwo.x;
+    const dy = victortwo.y - victortwo.y;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+export function rgbToHex(r: number, g: number, b: number): number {
     return (r << 16) | (g << 8) | b;
 }
 
-export function getRandomInt(min, max) {
+export function getRandomInt(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export function degToRad(degrees) {
+export function degToRad(degrees: number): number {
     return degrees * (Math.PI / 180);
 }
 

@@ -1,6 +1,6 @@
 import { Controller } from './utility/controller.js';
 import { ActorManagerClient } from './utility/ActorManagerClient.js';
-import { log } from './shared/helpers.js';
+import { log } from './shared/Helpers.js';
 
 var culledActorsCount = 0;
 

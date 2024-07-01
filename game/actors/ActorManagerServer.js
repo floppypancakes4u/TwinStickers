@@ -2,7 +2,7 @@ import { ServerPlayerController } from '../utility/ServerPlayerController.js';
 import { ServerActor } from './ServerActor.js';
 import { ServerAsteroid } from './ServerAsteroid.js'
 import { performance } from 'perf_hooks';
-import { log } from '../../shared/helpers.js';
+import { log } from '../../shared/Helpers.js';
 import { randomUUID } from 'crypto';
 
 // Create a lookup object

@@ -3,7 +3,7 @@ import { MovementComponent } from '../shared/MovementComponent.js';
 import { InteractionComponent } from './InteractionComponent.js';
 import { Engine } from './Engine.js';
 import { BeamHardpoint, ProjectileHardpoint } from './Hardpoint.js';
-import { log } from '../shared/helpers.js'
+import { log } from '../shared/Helpers.js'
 
 const BRAKING_DISTANCE = 100;
 
