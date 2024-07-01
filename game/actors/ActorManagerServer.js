@@ -42,7 +42,7 @@ export const ActorManagerServer = {
       log.info(`Client connected:`, socket.id);
 
       socket.on('StartController', function(cb) {        
-        const playerController = new ServerPlayerController(socket, this);
+        const playerController = new ServerPlayerController(socket);
         ActorManagerServer.playerControllers.set(socket.id, playerController);
 
         const actorData = {

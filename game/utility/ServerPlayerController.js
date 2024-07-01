@@ -1,10 +1,10 @@
 import { ServerActor } from '../actors/ServerActor.js';
 import { log } from '../../shared/Helpers.js';
+import { ActorManagerServer } from '../actors/ActorManagerServer.js';
 
 export class ServerPlayerController {
   constructor(socket, actorManager) {
     this.socket = socket;
-    this.actorManager = actorManager;
     this.actor = null;
 
     // Listen for player input updates from the client
@@ -35,7 +35,7 @@ export class ServerPlayerController {
       },
     };
 
-    this.actor = this.actorManager.spawnActor(actorData);
+    this.actor = ActorManagerServer.spawnActor(actorData);
     this.actor.setController(this);
 
     // Spawn a test roid for us
@@ -45,15 +45,15 @@ export class ServerPlayerController {
       serverClassType: "ServerAsteroid",
       clientClassType: "ClientAsteroid",
     }
-    this.roid = this.actorManager.spawnActor(roidData);
+    this.roid = ActorManagerServer.spawnActor(roidData);
   }
 
   handlePlayerInput(data) {}
 
   destroy() {
     if (this.actor) {
-      this.actorManager.actors.delete(this.actor.id);
-      this.actorManager.io.emit('actorDeleted', { id: this.actor.id });
+      console.log("ActorManagerServer", ActorManagerServer)
+      ActorManagerServer.deleteActor(this.socket, this.actor);
       this.actor = null;
     }
   }
