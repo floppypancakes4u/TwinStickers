@@ -1,4 +1,4 @@
-//import { bgBlue, bgGreen } from "colors";
+//import { bgBlue, bgGreen } from "./colors.js";
 
 const isNode = typeof process !== 'undefined' && process.versions != null && process.versions.node != null;
 

@@ -1,5 +1,5 @@
 // src/hardpoint.ts
-//import { HardpointDataTable, HardpointDataTableEntry } from './HardpointDataTable';
+//import { HardpointDataTable, HardpointDataTableEntry } from './HardpointDataTable.js';
 import { MathHelper } from "./MathHelper.js";
 export class HardPoint {
     constructor({ id, parentActor, x, y, classData = HardpointDataTable["devBlaster"] }) {

@@ -2,7 +2,7 @@
   "name": "express-simple-starter",
   "private": true,
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && node ./post-build.js",
     "start": "node dist/index.js",
     "build-and-start": "npm run build && npm run start",
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'tsc && node index.js'"
@@ -21,6 +21,7 @@
   },
   "type": "module",
   "devDependencies": {
+    "ts-loader": "^9.5.1",
     "tsc-alias": "^1.8.10",
     "webpack": "^5.92.1",
     "webpack-cli": "^5.1.4"
