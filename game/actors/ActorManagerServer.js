@@ -75,7 +75,7 @@ export const ActorManagerServer = {
         log.info(`Client disconnected: ${socket.id}`);
         if (this.playerControllers.has(socket.id)) {
           this.playerControllers.get(socket.id).destroy();
-          this.playerControllers.delete(socket.id);
+          //this.playerControllers.delete(socket.id);
         }
       });
     });
@@ -216,6 +216,7 @@ export const ActorManagerServer = {
   deleteActor(socket, data) {
     const actorId = data.id;
     if (this.actors.has(actorId)) {
+      log.debug("Attempting to delete actor id: ", actorId);
       this.actors.delete(actorId);
       this.io.emit('actorDeleted', { id: actorId });
     }

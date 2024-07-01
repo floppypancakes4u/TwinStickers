@@ -1,7 +1,7 @@
 import { distance, log } from "../shared/helpers.js";
 import { MathHelper } from "../shared/MathHelper.js";
-import { HardpointDataTable } from "../shared/HardpointDataTable.js";
-import { HardPoint } from "../shared/Hardpoint.js"
+//import { HardpointDataTable } from "../shared/HardpointDataTable.js";
+import { HardPoint, HardpointDataTable } from "../shared/Hardpoint.js"
 
 export class ClientHardpoint extends HardPoint {
     constructor({ scene, id, parentActor, x, y, classData = HardpointDataTable["devBlaster"] }) {
@@ -152,7 +152,7 @@ export class BeamHardpoint extends ClientHardpoint {
             beam.rotation = angle;
             beam.displayWidth = targetDistance;
     
-            this.targetActor.takeDamage(this.damagePerHit);
+            //this.targetActor.takeDamage(this.classData.damagePerHit);
         } else {
             this.deactivateBeam();
         }
@@ -214,10 +214,10 @@ export class ProjectileHardpoint extends ClientHardpoint {
         this.updateBullets(deltaTime);
 
         // Handle firing according to rate of fire
-        this.timeSinceLastShot += deltaTime;
-        if (this.timeSinceLastShot >= 1000 / this.rateOfFire) {
-            this.fire();
-            this.timeSinceLastShot = 0;
-        }
+        // this.timeSinceLastShot += deltaTime;
+        // if (this.timeSinceLastShot >= 1000 / this.rateOfFire) {
+        //     this.fire();
+        //     this.timeSinceLastShot = 0;
+        // }
     }
 }

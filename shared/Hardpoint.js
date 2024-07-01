@@ -25,7 +25,6 @@ export class HardPoint {
     }
     setRotation(degrees) {
         this.localRotation = degrees;
-        //console.log("rotation: ", this.localRotation)
     }
     handleHardpointLocalRotation() {
         // Get the base rotation from the parent actor
@@ -125,7 +124,6 @@ export class HardPoint {
         if (this.active)
             return;
         this.active = true;
-        console.log("Hardpoint activated");
     }
     deactivate() {
         if (!this.active)
@@ -142,9 +140,9 @@ export class HardPoint {
         }
     }
     fire() {
-        if (this.targetActor && this.isFacingTarget()) {
-            this.targetActor.takeDamage(this.classData.damagePerHit);
+        if (this.targetActor && this.isFacingTarget() && this.active) {
             this.IncrementSpawnerIndex();
+            this.targetActor.takeDamage(this.classData.damagePerHit);
         }
     }
 }
@@ -153,7 +151,7 @@ export const HardpointDataTable = {
         type: "Projectile",
         rotationSpeed: 0.03,
         texture: "dev_mining_turret",
-        rateOfFire: 10,
+        rateOfFire: 3,
         damagePerHit: 1,
         damageSpawnerOffsets: [{ x: 11, y: 0 }],
         alternateOffsets: false,

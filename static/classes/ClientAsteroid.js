@@ -160,7 +160,8 @@ export class ClientAsteroid extends BaseActor {
         this.heat = Math.min(100, this.heat + amount * this.heatTransitionSpeed);
         this.lastDamageTime = Date.now();
     
-        if (this.heat === 100) {
+        console.log("roid heat:", this.heat)
+        if (this.heat >= 100) {
             console.log("Asteroid heat is at maximum!");
         }
     }
