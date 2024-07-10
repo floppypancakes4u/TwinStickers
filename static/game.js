@@ -23,7 +23,8 @@ class World extends Phaser.Scene {
     // this.load.image('ship', 'assets/sprites/x2kship.png');
 
     
-    this.load.setBaseURL('https://twinstickers-mgwe--3000--9e2d28a3.local-credentialless.webcontainer.io/');
+    //this.load.setBaseURL('https://twinstickers-mgwe--3000--9e2d28a3.local-credentialless.webcontainer.io/');
+    this.load.setBaseURL('http://localhost:3000/')
     this.load.image('ship', 'static/assets/x2kship.png');
     this.load.image('dev_mining_turret', 'static/assets/turret_02_mk1.png');
     //this.load.image('dev_mining_turret_beam', 'static/assets/turret_02_beam_01_anim.gif');

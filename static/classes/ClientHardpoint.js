@@ -52,28 +52,28 @@ export class ClientHardpoint extends HardPoint {
             let endAngleRadians = rotation + halfAngleRadians;
 
             this.graphics.beginPath();
-            this.graphics.arc(this.worldX, this.worldY, incDistance, startAngleRadians, endAngleRadians, false);
+            this.graphics.arc(this.x, this.y, incDistance, startAngleRadians, endAngleRadians, false);
             this.graphics.strokePath();
 
             if (this.firingAngle < 360) {
                 this.graphics.beginPath();
-                this.graphics.moveTo(this.worldX, this.worldY);
+                this.graphics.moveTo(this.x, this.y);
                 this.graphics.lineTo(
-                    this.worldX + incDistance * Math.cos(startAngleRadians),
-                    this.worldY + incDistance * Math.sin(startAngleRadians)
+                    this.x + incDistance * Math.cos(startAngleRadians),
+                    this.y + incDistance * Math.sin(startAngleRadians)
                 );
-                this.graphics.moveTo(this.worldX, this.worldY);
+                this.graphics.moveTo(this.x, this.y);
                 this.graphics.lineTo(
-                    this.worldX + incDistance * Math.cos(endAngleRadians),
-                    this.worldY + incDistance * Math.sin(endAngleRadians)
+                    this.x + incDistance * Math.cos(endAngleRadians),
+                    this.y + incDistance * Math.sin(endAngleRadians)
                 );
                 this.graphics.strokePath();
             }
 
             if (incDistance > 0) {
                 let textPositionAngle = rotation + halfAngleRadians; // Position at the end of the arc
-                let textX = this.worldX + (incDistance + 10) * Math.cos(textPositionAngle); // Adjust text position
-                let textY = this.worldY + (incDistance + 10) * Math.sin(textPositionAngle); // Adjust text position
+                let textX = this.x + (incDistance + 10) * Math.cos(textPositionAngle); // Adjust text position
+                let textY = this.y + (incDistance + 10) * Math.sin(textPositionAngle); // Adjust text position
                 let text = this.scene.add.text(textX, textY, `${incDistance} units`, { color: '#ffffff', fontSize: '14px' });
                 this.texts[incDistance] = text; // Store text object for future management
             }
@@ -87,7 +87,7 @@ export class ClientHardpoint extends HardPoint {
 
     update(deltaTime) {
         super.update(deltaTime);
-        this.sprite.setPosition(this.worldX, this.worldY);
+        this.sprite.setPosition(this.x, this.y);
     
         this.updateSpriteToLocalRotation();
         this.drawAngledArc();
@@ -99,6 +99,7 @@ export class BeamHardpoint extends ClientHardpoint {
         super({ scene, id, parentActor, x, y, classData })
 
         this.beamSprite = null;
+        this.debugGraphics = this.scene.add.graphics();
     }
 
     activateBeam() {
@@ -117,52 +118,56 @@ export class BeamHardpoint extends ClientHardpoint {
         this.beamSprite = null;
     }
     
-    deactivate() {
-        super.deactivate();
-        this.deactivateBeam();
-    }
-
     updateBeam() {
-        if (!this.active) return;
+        if (!this.active) {
+            this.deactivateBeam();
+            return;
+        }
     
         const facingTarget = this.isFacingTarget();
-
+    
         if (facingTarget) {
             this.activateBeam();
         } else {
             this.deactivateBeam();
+            return;
         }
-
-        if (this.targetActor && facingTarget) {
-            let targetDistance = Math.min(distance(this.parentActor, this.targetActor), this.distance);
-            let angle = this.sprite.rotation;
     
-            if (!this.beamSprite == null) return;
+        if (this.targetActor && this.beamSprite) {
+            // Calculate the distance and angle to the target
+            const dx = this.targetActor.x - this.x;
+            const dy = this.targetActor.y - this.y;
+            const distanceToTarget = Math.sqrt(dx * dx + dy * dy);
+            const angle = Math.atan2(dy, dx);
     
-            // Get the beam sprite
-            let beam = this.beamSprite;
+            // Clamp the distance to the maximum weapon range
+            const clampedDistance = Math.min(distanceToTarget, this.distance);
     
-           // Get the starting position for the beam using the new method
-            const spawnPosition = this.getProjectileSpawnPosition();
-
-            // Update the position, rotation, and width of the beam sprite
-            let segmentX = spawnPosition.x + Math.cos(angle) * (targetDistance / 2);
-            let segmentY = spawnPosition.y + Math.sin(angle) * (targetDistance / 2);
-            beam.setPosition(segmentX, segmentY);
-            beam.rotation = angle;
-            beam.displayWidth = targetDistance;
+            // Update beam position and scale
+            this.beamSprite.setPosition(this.x, this.y);
+            this.beamSprite.setRotation(angle);
     
-            //this.targetActor.takeDamage(this.classData.damagePerHit);
+            // Scale the beam based on the clamped distance and adjust the beam's origin
+            this.beamSprite.setScale(clampedDistance / this.beamSprite.width, 1);
+            this.beamSprite.setOrigin(0, 0.5); // Set the origin to the start of the beam
+    
+            // Update debug graphics if needed
+            // this.debugGraphics.clear();
+            // this.debugGraphics.lineStyle(2, 0xff0000, 1);
+            // this.debugGraphics.beginPath();
+            // this.debugGraphics.moveTo(this.x, this.y);
+            // this.debugGraphics.lineTo(this.x + clampedDistance * Math.cos(angle), this.y + clampedDistance * Math.sin(angle));
+            // this.debugGraphics.strokePath();
         } else {
             this.deactivateBeam();
         }
     }
-
+    
     update(deltaTime) {
-        super.update(deltaTime)
-        
+        super.update(deltaTime);
         this.updateBeam();
     }
+    
 }
 
 export class ProjectileHardpoint extends ClientHardpoint {
@@ -175,7 +180,7 @@ export class ProjectileHardpoint extends ClientHardpoint {
     }
 
     createBullet() {
-        let bullet = this.scene.add.sprite(this.worldX, this.worldY, 'dev_mining_turret_beam');
+        let bullet = this.scene.add.sprite(this.x, this.y, 'dev_mining_turret_beam');
         bullet.setOrigin(0.5, 0.5);
         bullet.rotation = this.sprite.rotation;
         bullet.speed = this.bulletSpeed;

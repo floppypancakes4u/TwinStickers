@@ -10,8 +10,8 @@ export declare class HardPoint {
     private id;
     private parentActor;
     private targetActor;
-    private worldX;
-    private worldY;
+    private x;
+    private y;
     private offsetX;
     private offsetY;
     private classData;

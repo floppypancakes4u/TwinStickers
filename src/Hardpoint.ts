@@ -16,8 +16,8 @@ export class HardPoint {
   private id: any;
   private parentActor: any;
   private targetActor: any | null;
-  private worldX: number;
-  private worldY: number;
+  private x: number;
+  private y: number;
   private offsetX: number;
   private offsetY: number;
   private classData: HardpointDataTableEntry;
@@ -38,8 +38,8 @@ export class HardPoint {
     this.id = id;
     this.parentActor = parentActor;
     this.targetActor = null;
-    this.worldX = 0;
-    this.worldY = 0;
+    this.x = 0;
+    this.y = 0;
     this.offsetX = x;
     this.offsetY = y;
     this.classData = classData;
@@ -70,7 +70,7 @@ export class HardPoint {
     let setHardpointToHomePosition: boolean = false;
   
     if (this.targetActor) {
-        let targetAngle = Math.atan2(this.targetActor.y - this.worldY, this.targetActor.x - this.worldX);
+        let targetAngle = Math.atan2(this.targetActor.y - this.y, this.targetActor.x - this.x);
         deltaAngle = MathHelper.Angle.Wrap(targetAngle - currentAngle);
   
         let halfFiringAngleRadians = MathHelper.DegToRad(this.firingAngle / 2);
@@ -103,44 +103,87 @@ export class HardPoint {
     }
   }
 
-	private isFacingTarget(): boolean {
-    if (!this.targetActor) return false;
+	// private isFacingTarget(): boolean {
+  //   if (!this.targetActor) return false;
   
-    let targetAngle: number = Math.atan2(this.targetActor.y - this.worldY, this.targetActor.x - this.worldX);
-    let currentAngle: number = MathHelper.DegToRad(this.localRotation);
+  //   let targetAngle: number = Math.atan2(this.targetActor.y - this.worldY, this.targetActor.x - this.worldX);
+  //   let currentAngle: number = MathHelper.DegToRad(this.localRotation);
   
-    targetAngle = MathHelper.Angle.Wrap(targetAngle);
-    currentAngle = MathHelper.Angle.Wrap(currentAngle);
+  //   targetAngle = MathHelper.Angle.Wrap(targetAngle);
+  //   currentAngle = MathHelper.Angle.Wrap(currentAngle);
   
-    let angleDifference: number = MathHelper.Angle.Wrap(targetAngle - currentAngle);
-    let facingTarget: boolean = Math.abs(angleDifference) <= 0.1;
-    console.log(Math.abs(angleDifference))
-    return facingTarget;
-  } 
+  //   let angleDifference: number = MathHelper.Angle.Wrap(targetAngle - currentAngle);
+  //   let facingTarget: boolean = Math.abs(angleDifference) <= 0.1;
+  //   console.log("isFacingTarget", Math.abs(angleDifference))
+  //   return facingTarget;
+  // } 
 
-	private getProjectileSpawnPosition(): Vector2d {
-		// Calculate the rotation in radians from localRotation in degrees
-		const rotationInRadians: number = MathHelper.DegToRad(this.localRotation);
+   private isFacingTarget(): boolean {
+     if (!this.targetActor) return false;
+  
+  //   // Calculate the angle to the target actor
+     let targetAngle: number = Math.atan2(this.targetActor.y - this.y, this.targetActor.x - this.x);
+  
+  //   // Calculate the hardpoint's current angle, which is the parent actor's rotation plus the hardpoint's local rotation
+     let currentAngle: number = this.parentActor.rotation + MathHelper.DegToRad(this.localRotation);
+  
+  //   // Normalize both angles
+     targetAngle = MathHelper.Angle.Wrap(targetAngle);
+     currentAngle = MathHelper.Angle.Wrap(currentAngle);
+  
+  //   // Calculate the difference between the target angle and the current angle
+     let angleDifference: number = MathHelper.Angle.Wrap(targetAngle - currentAngle);
+  
+  //   // Check if the absolute difference is within a small threshold (e.g., 0.1 radians)
+     let facingTarget: boolean = Math.abs(angleDifference) <= 0.1;
+  
+     return facingTarget;
+   }
 
-		// Calculate the offset position based on the hardpoint's rotation
-		const offsetX: number = this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].x * Math.cos(rotationInRadians) -
-														this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].y * Math.sin(rotationInRadians);
-		const offsetY: number = this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].x * Math.sin(rotationInRadians) +
-														this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].y * Math.cos(rotationInRadians);
+	// private getProjectileSpawnPosition(): Vector2d {
+	// 	// Calculate the rotation in radians from localRotation in degrees
+	// 	const rotationInRadians: number = MathHelper.DegToRad(this.localRotation);
 
-		// Calculate the world position for the projectile spawn
-		const projectileX: number = this.worldX + offsetX;
-		const projectileY: number = this.worldY + offsetY;
+	// 	// Calculate the offset position based on the hardpoint's rotation
+	// 	const offsetX: number = this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].x * Math.cos(rotationInRadians) -
+	// 													this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].y * Math.sin(rotationInRadians);
+	// 	const offsetY: number = this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].x * Math.sin(rotationInRadians) +
+	// 													this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].y * Math.cos(rotationInRadians);
 
-		return { x: projectileX, y: projectileY };
-	}
+	// 	// Calculate the world position for the projectile spawn
+	// 	const projectileX: number = this.worldX + offsetX;
+	// 	const projectileY: number = this.worldY + offsetY;
 
+	// 	return { x: projectileX, y: projectileY };
+	// }
+
+  private getProjectileSpawnPosition(): Vector2d {
+    // Calculate the rotation in radians from localRotation in degrees
+    const localRotationInRadians: number = MathHelper.DegToRad(this.localRotation);
+  
+    // Calculate the hardpoint's current world rotation (parent rotation + local rotation)
+    const worldRotationInRadians: number = this.parentActor.rotation + localRotationInRadians;
+  
+    // Calculate the offset position based on the hardpoint's world rotation
+    const offsetX: number = this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].x * Math.cos(worldRotationInRadians) -
+                            this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].y * Math.sin(worldRotationInRadians);
+    const offsetY: number = this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].x * Math.sin(worldRotationInRadians) +
+                            this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].y * Math.cos(worldRotationInRadians);
+  
+    // Calculate the world position for the projectile spawn
+    const projectileX: number = this.x + offsetX;
+    const projectileY: number = this.y + offsetY;
+  
+    return { x: projectileX, y: projectileY };
+  }
+
+  
 	private update(deltaTime: number): void {
     const offsetX = this.offsetX * Math.cos(this.parentActor.rotation) - this.offsetY * Math.sin(this.parentActor.rotation);
     const offsetY = this.offsetX * Math.sin(this.parentActor.rotation) + this.offsetY * Math.cos(this.parentActor.rotation);
   
-    this.worldX = this.parentActor.x + offsetX;
-    this.worldY = this.parentActor.y + offsetY;
+    this.x = this.parentActor.x + offsetX;
+    this.y = this.parentActor.y + offsetY;
   
     this.handleHardpointLocalRotation();
   
@@ -188,7 +231,6 @@ export class HardPoint {
   }
 
 	public fire(): void {
-    console.log(this.isFacingTarget(), this.active)
 		if (this.targetActor && this.isFacingTarget() && this.active) {
         this.IncrementSpawnerIndex();
 				this.targetActor.takeDamage(this.classData.damagePerHit);
