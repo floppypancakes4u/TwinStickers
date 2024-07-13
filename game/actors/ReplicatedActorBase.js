@@ -36,39 +36,14 @@ export class ReplicatedActorBase {
       this.MovementComponent = new MovementComponent({
           actor: this
       });
-
-      //log.debug(`ReplicatedActorBase Spawned. ID: ${this.id}`)
+  }
+        
+  setRotation(rot) {
+      this.rotation = rot;
   }
 
-  clearUpdates(movementOnly = false) {
-    if (movementOnly) {
-        this.needsMovementUpdate = false;
-        return;
-    }
-
+  clearUpdates() {
     this.needsUpdate = false;
-  }
-
-  setMovementUpdateFromClient(data) {
-
-    //log.debug("setmovementUpdate for", data)
-
-    // let parsedData = {}
-    // for (const [key, value] of Object.entries(data)) {
-    //     let floated = 0;
-
-    //     if (key != "velocity") {
-    //         floated = parseFloat(value.toFixed(2))
-    //         log.debug("floated:", floated)
-    //         parsedData[key] = floated
-    //     }        
-    // }
-
-    // Object.assign(this, parsedData);
-    
-    Object.assign(this, data);
-    //this.needsMovementUpdate = true; // Not needed. MovementComponent update will
-    // detect changes and automatically mark them for needing network update
   }
 
   getClientSpawnData() {
@@ -78,19 +53,9 @@ export class ReplicatedActorBase {
           y: this.y,
           rotation: this.rotation,
           velocity: this.velocity,
-          rotation: this.rotation,
           className: this.clientClassName,
           classData: this.classData
       }
-  }
-
-  preDestroy() {
-      this.selected = false;
-      this.reticle.clear();
-  }
-
-  setRotation(rot) {
-      this.rotation = rot;
   }
 
   update(deltaTime) {
@@ -99,9 +64,52 @@ export class ReplicatedActorBase {
   }
 }
 
+export class ReplicatedMovementActorBase extends ReplicatedActorBase {
+    constructor({
+        id,
+        x = 0,
+        y = 0,
+        options = {
+            roam: false
+        }
+    }) {
+        super({
+            id,
+            x,
+            y
+        })
+
+        this.needsMovementUpdate = false;
+  
+        this.classData = {}
+  
+        this.MovementComponent = new MovementComponent({
+            actor: this
+        });
+    }
+  
+    clearUpdates(movementOnly = false) {
+      if (movementOnly) {
+          this.needsMovementUpdate = false;
+          return;
+      }
+
+      super.clearUpdates();
+    }
+  
+    setMovementUpdateFromClient(data) {    
+      Object.assign(this, data);
+    }  
+  
+    update(deltaTime) {
+        this.MovementComponent.update(deltaTime);
+        if (this.MovementComponent.needsUpdate) this.needsMovementUpdate = true;
+    }
+  }
+
 // The class has basic flight abilities, including autopilot.
 // Weight is added here as it is needed in thrust caculations.
-export class FlightActorBase extends ReplicatedActorBase {
+export class FlightActorBase extends ReplicatedMovementActorBase {
   constructor({
       id,
       x = 0,

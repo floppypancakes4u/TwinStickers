@@ -132,11 +132,12 @@ export class BeamHardpoint extends ClientHardpoint {
             this.deactivateBeam();
             return;
         }
-    
+        
         if (this.targetActor && this.beamSprite) {
+            const pos = this.getProjectileSpawnPosition();
             // Calculate the distance and angle to the target
-            const dx = this.targetActor.x - this.x;
-            const dy = this.targetActor.y - this.y;
+            const dx = this.targetActor.x - pos.x;
+            const dy = this.targetActor.y - pos.y;
             const distanceToTarget = Math.sqrt(dx * dx + dy * dy);
             const angle = Math.atan2(dy, dx);
     
@@ -144,20 +145,12 @@ export class BeamHardpoint extends ClientHardpoint {
             const clampedDistance = Math.min(distanceToTarget, this.distance);
     
             // Update beam position and scale
-            this.beamSprite.setPosition(this.x, this.y);
+            this.beamSprite.setPosition(pos.x, pos.y);
             this.beamSprite.setRotation(angle);
     
             // Scale the beam based on the clamped distance and adjust the beam's origin
             this.beamSprite.setScale(clampedDistance / this.beamSprite.width, 1);
             this.beamSprite.setOrigin(0, 0.5); // Set the origin to the start of the beam
-    
-            // Update debug graphics if needed
-            // this.debugGraphics.clear();
-            // this.debugGraphics.lineStyle(2, 0xff0000, 1);
-            // this.debugGraphics.beginPath();
-            // this.debugGraphics.moveTo(this.x, this.y);
-            // this.debugGraphics.lineTo(this.x + clampedDistance * Math.cos(angle), this.y + clampedDistance * Math.sin(angle));
-            // this.debugGraphics.strokePath();
         } else {
             this.deactivateBeam();
         }
@@ -171,7 +164,7 @@ export class BeamHardpoint extends ClientHardpoint {
 }
 
 export class ProjectileHardpoint extends ClientHardpoint {
-    constructor({ scene, id, parentActor, x, y, classData = HardpointDataTable["devBeam"] }) {
+    constructor({ scene, id, parentActor, x, y, classData = HardpointDataTable["devBlaster"] }) {
         super({ scene, id, parentActor, x, y, classData });
 
         this.bullets = [];

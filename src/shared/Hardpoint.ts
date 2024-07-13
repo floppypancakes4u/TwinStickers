@@ -1,8 +1,8 @@
 // src/hardpoint.ts
 
 import { HardpointDataTable, HardpointDataTableEntry } from './HardpointDataTable';
-import { MathHelper } from "MathHelper";
-import { Vector2d } from "Helpers";
+import { MathHelper } from "./MathHelper";
+import { Vector2d } from "./Helpers";
 
 interface HardpointConstructor {
   id: any;
@@ -23,7 +23,6 @@ export class HardPoint {
   private classData: HardpointDataTableEntry;
   private damageSpawnPoints: number;
   private currentDamageSpawnerIndex: number;
-  //private rotationSpeed: number;
   //private damagePerHit: number;
   //private rateOfFire: number;
   private timeSinceLastShot: number;
@@ -31,7 +30,6 @@ export class HardPoint {
   private baseRotation: number;
   private localRotation: number;
   private firingAngle: number;
-  //private drawFiringAngles: boolean;
   private active: boolean;
 
   constructor({ id, parentActor, x, y, classData = HardpointDataTable["devBlaster"] }: HardpointConstructor) {
@@ -45,17 +43,11 @@ export class HardPoint {
     this.classData = classData;
     this.damageSpawnPoints = this.classData.damageSpawnerOffsets.length;
     this.currentDamageSpawnerIndex = 0;
-    //this.rotationSpeed = classData.rotationSpeed; // Speed at which the hardpoint rotates towards its target, in radians per frame
-    
-    //this.damagePerHit = 1;
-    //this.rateOfFire = 10; // 10 times a second.
     this.timeSinceLastShot = 0; // Time tracker for rate of fire
-    
     this.distance = 1000;  // max range of the hardpoint
     this.baseRotation = 0;     // default rotation to face right
     this.localRotation = this.baseRotation;     // default rotation to face right
     this.firingAngle = 360;       // angle of the firing arc
-    
     this.active = false;
   }
 
@@ -103,59 +95,27 @@ export class HardPoint {
     }
   }
 
-	// private isFacingTarget(): boolean {
-  //   if (!this.targetActor) return false;
+  private isFacingTarget(): boolean {
+    if (!this.targetActor) return false;
   
-  //   let targetAngle: number = Math.atan2(this.targetActor.y - this.worldY, this.targetActor.x - this.worldX);
-  //   let currentAngle: number = MathHelper.DegToRad(this.localRotation);
-  
-  //   targetAngle = MathHelper.Angle.Wrap(targetAngle);
-  //   currentAngle = MathHelper.Angle.Wrap(currentAngle);
-  
-  //   let angleDifference: number = MathHelper.Angle.Wrap(targetAngle - currentAngle);
-  //   let facingTarget: boolean = Math.abs(angleDifference) <= 0.1;
-  //   console.log("isFacingTarget", Math.abs(angleDifference))
-  //   return facingTarget;
-  // } 
-
-   private isFacingTarget(): boolean {
-     if (!this.targetActor) return false;
-  
-  //   // Calculate the angle to the target actor
+    // Calculate the angle to the target actor
      let targetAngle: number = Math.atan2(this.targetActor.y - this.y, this.targetActor.x - this.x);
   
-  //   // Calculate the hardpoint's current angle, which is the parent actor's rotation plus the hardpoint's local rotation
+    // Calculate the hardpoint's current angle, which is the parent actor's rotation plus the hardpoint's local rotation
      let currentAngle: number = this.parentActor.rotation + MathHelper.DegToRad(this.localRotation);
   
-  //   // Normalize both angles
+    // Normalize both angles
      targetAngle = MathHelper.Angle.Wrap(targetAngle);
      currentAngle = MathHelper.Angle.Wrap(currentAngle);
   
-  //   // Calculate the difference between the target angle and the current angle
+    // Calculate the difference between the target angle and the current angle
      let angleDifference: number = MathHelper.Angle.Wrap(targetAngle - currentAngle);
   
-  //   // Check if the absolute difference is within a small threshold (e.g., 0.1 radians)
-     let facingTarget: boolean = Math.abs(angleDifference) <= 0.1;
+    // Check if the absolute difference is within a small threshold (e.g., 0.1 radians)
+    let facingTarget: boolean = Math.abs(angleDifference) <= 0.1;
   
-     return facingTarget;
-   }
-
-	// private getProjectileSpawnPosition(): Vector2d {
-	// 	// Calculate the rotation in radians from localRotation in degrees
-	// 	const rotationInRadians: number = MathHelper.DegToRad(this.localRotation);
-
-	// 	// Calculate the offset position based on the hardpoint's rotation
-	// 	const offsetX: number = this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].x * Math.cos(rotationInRadians) -
-	// 													this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].y * Math.sin(rotationInRadians);
-	// 	const offsetY: number = this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].x * Math.sin(rotationInRadians) +
-	// 													this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].y * Math.cos(rotationInRadians);
-
-	// 	// Calculate the world position for the projectile spawn
-	// 	const projectileX: number = this.worldX + offsetX;
-	// 	const projectileY: number = this.worldY + offsetY;
-
-	// 	return { x: projectileX, y: projectileY };
-	// }
+    return facingTarget;
+}
 
   private getProjectileSpawnPosition(): Vector2d {
     // Calculate the rotation in radians from localRotation in degrees
@@ -176,7 +136,6 @@ export class HardPoint {
   
     return { x: projectileX, y: projectileY };
   }
-
   
 	private update(deltaTime: number): void {
     const offsetX = this.offsetX * Math.cos(this.parentActor.rotation) - this.offsetY * Math.sin(this.parentActor.rotation);
@@ -195,18 +154,6 @@ export class HardPoint {
     }
   }
   
-  // private getProjectileSpawnPosition(): Vector2d {
-  //   // Calculate the offset position based on the hardpoint's rotation
-  //   const offsetX = this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].x * Math.cos(this.localRotation) - this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].y * Math.sin(this.localRotation);
-  //   const offsetY = this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].x * Math.sin(this.localRotation) + this.classData.damageSpawnerOffsets[this.currentDamageSpawnerIndex].y * Math.cos(this.localRotation);
-
-  //   // Calculate the world position for the projectile spawn
-  //   const projectileX = this.worldX + offsetX;
-  //   const projectileY = this.worldY + offsetY;
-
-  //   return { x: projectileX, y: projectileY };
-  // }
-
   ////////////
   // Public //
   ////////////

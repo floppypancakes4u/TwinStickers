@@ -2,10 +2,10 @@
   "name": "express-simple-starter",
   "private": true,
   "scripts": {
-    "build": "tsc && node ./post-build.js",
+    "build": "tsc  --project tsconfig.shared.json && node ./post-build.js",
     "start": "node dist/index.js",
     "build-and-start": "npm run build && npm run start",
-    "dev": "nodemon --watch 'src/**/*.ts' --exec 'tsc && node index.js'"
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'tsc --project tsconfig.shared.json && node index.js'"
   },
   "dependencies": {
     "chalk": "^5.3.0",
