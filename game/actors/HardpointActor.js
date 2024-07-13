@@ -11,7 +11,8 @@ export class HardpointActor extends ReplicatedActorBase {
   }) {
     super({id, x, y, options})   
 
-    this.controller = null;    
+    this.parentActor = parentActor;
+    this.classData = classData;
   }
 
   setController(controller) {
