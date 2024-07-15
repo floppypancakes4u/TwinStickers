@@ -52,9 +52,6 @@ export const ActorManagerServer = {
           x: 0,
           y: 0,
           texture: 'ship', // Adjust as needed
-          options: {
-            roam: false,
-          },
         };
     
         let playerActor = ActorManagerServer.spawnActor(actorData);

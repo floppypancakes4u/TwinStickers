@@ -13,10 +13,8 @@ export class HardpointActor extends ReplicatedActorBase {
 
     this.parentActor = parentActor;
     this.classData = classData;
-  }
 
-  setController(controller) {
-    this.controller = controller;
+    log.debug(`HardpointActor Created:` , this);
   }
   
   getClientSpawnData() {
@@ -28,10 +26,9 @@ export class HardpointActor extends ReplicatedActorBase {
         velocity: this.velocity,
         classData: this.classData
     }
-}
+  }
 
   update(deltaTime) {
     super.update(deltaTime);
-    if (this.autoPilotActive) this.handleAutopilot(deltaTime);
   }
 }

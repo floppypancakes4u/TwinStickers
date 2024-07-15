@@ -25,17 +25,9 @@ export class ReplicatedActorBase {
           y: 0
       };
       this.rotation = 0;
-
       this.clientClassName = "";
-
       this.needsUpdate = false;
-      this.needsMovementUpdate = false;
-
       this.classData = {}
-
-      this.MovementComponent = new MovementComponent({
-          actor: this
-      });
   }
         
   setRotation(rot) {

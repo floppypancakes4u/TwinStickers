@@ -9,19 +9,31 @@ export class ServerActor extends FlightActorBase {
     options = {
       roam: false,
     },
+    classData = {
+      texture: 'ship',
+      hardpointMounts: {
+        1: {x: -2, y: -20.5, actor: null},
+        2: {x: 2, y: 20.5, actor: null},
+      }
+    }
   }) {
     super({id, x, y, options})   
 
     this.controller = null;
     this.clientClassName = "ClientActor"
-    this.classData = {
-      texture: 'ship',
-    }
+    this._classData = classData;
 
-    this.hardpoints = new Map({ 1: null, 2: null});
+    this.hardpoints = new Map();
 
-    this.setHardpoint(1, new BeamHardpoint({id: "testBeam", parentActor: this, x: -2, y: -20.5}))
-    this.setHardpoint(2, new ProjectileHardpoint({scene, id: "testProjectile", parentActor: this, x: 2, y: 20.5}))    
+    // console.log("this._classData", this._classData)
+    // // Setup hardpoints
+    // this._classData.hardpointMounts.forEach((mount, index) => {
+    //   this.hardpoints.set(index, mount);
+    // });
+
+
+    // this.setHardpoint(1, new BeamHardpoint({id: "testBeam", parentActor: this}))
+    // this.setHardpoint(2, new ProjectileHardpoint({scene, id: "testProjectile", parentActor: this}))    
   }
 
   setController(controller) {
@@ -29,7 +41,8 @@ export class ServerActor extends FlightActorBase {
   }
 
   setHardpoint(id, hardpoint) {
-    this.hardpoints.set(id, hardpoint);
+    this.hardpoints.get(id).actor = hardpoint;
+    //this.hardpoints.set(id, hardpoint);
     log.debug(`Hardpoint ${id} set for actor`, this);
   }
 

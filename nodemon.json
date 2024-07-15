@@ -1,5 +1,5 @@
 {
-  "watch": ["src", "game", "static"],
+  "watch": ["src", "static"],
   "ext": "ts, js",
   "exec": "npm run build && node index.js",
   "ignore": ["dist"]
