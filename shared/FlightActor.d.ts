@@ -1,6 +1,6 @@
-import { MovementActor, MovementActorConstructor } from '../server/Actors/MovementActor';
+import { MovementActor, MovementActorConstructor } from './MovementActor';
 interface FlightActorConstructor extends MovementActorConstructor {
-    additionalProperty: string;
+    needsMovementUpdate: boolean;
 }
 interface inputStates {
     thrustForward: false;
@@ -25,7 +25,6 @@ export declare class FlightActor extends MovementActor {
     inputStates: inputStates;
     flightData: flightData;
     constructor({ id, pos, parentActor }: FlightActorConstructor);
-    setMovementUpdateFromClient(data: any): void;
     update(deltaTime: number): void;
 }
 export {};

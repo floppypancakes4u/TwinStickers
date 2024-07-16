@@ -1,4 +1,4 @@
-import { FlightActor } from "../server/Actors/FlightActor"
+import { FlightActor } from "./Actors/FlightActor"
 import { Vector2d } from "./Helpers";
 
 export interface MovementUpdate {

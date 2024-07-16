@@ -3,12 +3,16 @@
     "module": "ES6",
     "target": "ES6",
     "outDir": "./game",
-    "rootDir": "./src",
+    "rootDir": "./server_src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "declaration": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "composite": true  // Required for project references
   },
-  "include": ["./src/server/**/*"]
+  "include": ["./server_src/**/*"],
+  "references": [
+    { "path": "./shared_src" }  // Adjust the path if necessary
+  ]
 }

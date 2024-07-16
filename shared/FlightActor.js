@@ -1,4 +1,4 @@
-import { MovementActor } from '../server/Actors/MovementActor.js';
+import { MovementActor } from './MovementActor.js';
 import { MovementComponent } from "./MovementComonent.js";
 export class FlightActor extends MovementActor {
     constructor({ id, pos, parentActor }) {
@@ -22,9 +22,6 @@ export class FlightActor extends MovementActor {
                 effective: 1000
             }
         };
-    }
-    setMovementUpdateFromClient(data) {
-        Object.assign(this, data);
     }
     update(deltaTime) {
         super.update(deltaTime); // Call the parent class's update method, if it exists

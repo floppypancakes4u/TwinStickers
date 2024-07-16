@@ -1,6 +1,5 @@
 import { MovementActor, MovementActorConstructor } from './MovementActor';
-interface FlightActorConstructor extends MovementActorConstructor {
-    additionalProperty: string;
+export interface FlightActorConstructor extends MovementActorConstructor {
 }
 interface inputStates {
     thrustForward: false;

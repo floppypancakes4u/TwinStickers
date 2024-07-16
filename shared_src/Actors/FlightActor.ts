@@ -1,8 +1,8 @@
 import { MovementActor, MovementActorConstructor } from './MovementActor';
-import { MovementComponent } from "../../shared/MovementComonent";
+import { MovementComponent } from "../MovementComonent";
 
-interface FlightActorConstructor extends MovementActorConstructor {
-    additionalProperty: string;
+export interface FlightActorConstructor extends MovementActorConstructor {
+    
 }
 
 interface inputStates {

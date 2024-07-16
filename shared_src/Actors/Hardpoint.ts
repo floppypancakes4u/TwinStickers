@@ -1,8 +1,8 @@
 // src/hardpoint.ts
 
-import { HardpointDataTable, HardpointDataTableEntry } from './HardpointDataTable';
-import { MathHelper } from "./MathHelper";
-import { Vector2d } from "./Helpers";
+import { HardpointDataTable, HardpointDataTableEntry } from '../HardpointDataTable';
+import { MathHelper } from "../MathHelper";
+import { Vector2d } from "../Helpers";
 
 interface HardpointConstructor {
   id: any;

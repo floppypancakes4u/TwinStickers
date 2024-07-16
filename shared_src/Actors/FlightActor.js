@@ -1,5 +1,5 @@
 import { MovementActor } from './MovementActor';
-import { MovementComponent } from "../../shared/MovementComonent";
+import { MovementComponent } from "../MovementComonent";
 export class FlightActor extends MovementActor {
     constructor({ id, pos, parentActor }) {
         super({ id, pos, parentActor });
