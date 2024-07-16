@@ -1,44 +1,99 @@
 // import { MathHelper } from "./MathHelper";
 import { Vector2d } from "../../shared/Helpers";
 
-interface CPUConstructor {
+export interface ReplicatedBaseConstructor {
     id: string;
-    parentActor: any;
+    pos: Vector2d;
+    parentActor?: ReplicatedBase;
 }
 
-interface DataMessage {
-    name: string;
-    data: string;
-    timestamp: number;
+export interface ClassData {
+
+}
+
+interface MovementUpdate {
+    pos?: Vector2d;
+    velocity?: Vector2d;
+    rotation?: number;
+    speed?: number;
+}
+
+export interface SpawnData {
+    id: string;
+    parentActor?: ReplicatedBase;
+    created?: Date;
+    MovementData: MovementUpdate;
 }
 
 export class ReplicatedBase {
-    private id: string;
-    private pos: Vector2d;  
+    public id: string;
+    public pos: Vector2d;
+    private _lastPos: Vector2d;
+    public rotation: number;
+    private _lastRotation: number;
+    private parentActor: ReplicatedBase | undefined;
+    private needsUpdate: boolean;
+    private classData: ClassData;
+    private created: Date;
 
-    constructor({ }: CPUConstructor) {
-    this.id = id;
-    this.parentActor = parentActor;
-    this.eventBusBuffer = [];  
-    this.active = false;
+    constructor({ id, pos, parentActor = undefined }: ReplicatedBaseConstructor) {
+        this.id = id;
+        this.pos = pos;
+        this._lastPos = pos;
+        this.rotation = 0;
+        this._lastRotation = 0;
+        this.parentActor = parentActor;
+        this.needsUpdate = false;
+        this.classData = {};
+        this.created = new Date();
     }
 
-    private verifyValidData(data: DataMessage): boolean {
-        if (data.name == null) return false;
-        if (data.name == "") return false;
-        
-        if (data.data == null) return false;
-
-        return true;
+    private requireUpdate() {
+        this.needsUpdate = true;
     }
 
-    public addData(data: DataMessage): boolean {
-        if (!this.verifyValidData(data)) return false;
+    // private clearUpdates() {
+    //     this.needsUpdate = false;
+    // }
 
-        data.timestamp = Date.now();
+    public getUpdates(forceAll: boolean = false): MovementUpdate {
+        let updates: MovementUpdate = {};
 
-        this.eventBusBuffer.push(data);
+        if (this._lastPos != this.pos || forceAll) {
+            updates.pos = this.pos;
+            this._lastPos = this.pos
+        }
 
-        return true;
+        if (this._lastRotation != this.rotation || forceAll) {
+            updates.rotation = this.rotation;
+            this._lastRotation = this.rotation;
+        }
+
+        if (this._lastPos != this.pos || forceAll) {
+            updates.pos = this.pos;
+            this._lastPos = this.pos
+        }
+
+        //this.clearUpdates();
+
+        return updates;
+    }
+
+    public getClientSpawnData(): SpawnData {
+        return {
+            id: this.id,
+            parentActor: this.parentActor,
+            created: this.created,
+            MovementData: this.getUpdates(true),
+        };
+    }
+
+    public setRotation(rot: number) {
+        this.rotation = rot;
+        this.requireUpdate();
+    }
+
+    public update(deltaTime: number) {
+
     }
 }

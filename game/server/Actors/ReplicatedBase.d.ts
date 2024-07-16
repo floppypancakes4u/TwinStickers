@@ -1,9 +1,10 @@
 import { Vector2d } from "../../shared/Helpers";
-interface ReplicatedBaseConstructor {
+export interface ReplicatedBaseConstructor {
     id: string;
     pos: Vector2d;
     parentActor?: ReplicatedBase;
-    created: Date;
+}
+export interface ClassData {
 }
 interface MovementUpdate {
     pos?: Vector2d;
@@ -11,7 +12,7 @@ interface MovementUpdate {
     rotation?: number;
     speed?: number;
 }
-interface SpawnData {
+export interface SpawnData {
     id: string;
     parentActor?: ReplicatedBase;
     created?: Date;
