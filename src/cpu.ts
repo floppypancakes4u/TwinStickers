@@ -1,5 +1,4 @@
 // import { MathHelper } from "./MathHelper";
-// import { Vector2d } from "./Helpers";
 
 interface CPUConstructor {
     id: string;

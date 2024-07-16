@@ -1,5 +1,7 @@
-// import { MathHelper } from "./MathHelper";
-import { Vector2d } from "../../shared/Helpers";
+export interface Vector2d {
+    x: number,
+    y: number
+}
 
 export interface ReplicatedBaseConstructor {
     id: string;

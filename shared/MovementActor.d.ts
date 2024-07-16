@@ -1,4 +1,5 @@
-import { ReplicatedBase, ReplicatedBaseConstructor, Vector2d } from './ReplicatedBase';
+import { ReplicatedBase, ReplicatedBaseConstructor } from '../server/Actors/ReplicatedBase';
+import { Vector2d } from "./Helpers";
 export interface MovementActorConstructor extends ReplicatedBaseConstructor {
 }
 export declare class MovementActor extends ReplicatedBase {

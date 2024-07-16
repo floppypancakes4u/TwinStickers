@@ -1,7 +1,4 @@
-export interface Vector2d {
-    x: number;
-    y: number;
-}
+import { Vector2d } from "./Helpers";
 export interface ReplicatedBaseConstructor {
     id: string;
     pos: Vector2d;

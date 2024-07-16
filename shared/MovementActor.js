@@ -1,12 +1,12 @@
-import { ReplicatedBase } from './ReplicatedBase';
+import { ReplicatedBase } from '../server/Actors/ReplicatedBase.js';
 export class MovementActor extends ReplicatedBase {
     constructor({ id, pos, parentActor }) {
         super({ id, pos, parentActor });
         this.velocity = { x: 0, y: 0 };
         this._lastVelocity = { x: 0, y: 0 };
     }
-    setMovementUpdateFromClient(update) {
-        Object.assign(this, update);
+    setMovementUpdateFromClient(data) {
+        Object.assign(this, data);
     }
     update(deltaTime) {
         super.update(deltaTime); // Call the parent class's update method, if it exists

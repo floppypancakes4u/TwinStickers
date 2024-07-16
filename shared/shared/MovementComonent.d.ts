@@ -1,6 +1,6 @@
 import { FlightActor } from "../server/Actors/FlightActor";
 import { Vector2d } from "./Helpers";
-interface UpdateData {
+export interface MovementUpdate {
     id: string;
     x?: number;
     y?: number;
@@ -22,16 +22,16 @@ interface StopData {
 export declare class MovementComponent {
     private actor;
     private needsUpdate;
-    private updates;
     private prevX;
     private prevY;
     private prevRotation;
     private prevVelocity;
     private isApplyingNetworkUpdate;
+    private NextMovementUpdate;
     constructor({ actor }: {
         actor: FlightActor;
     });
-    applyNetworkMovementUpdate(updateData: UpdateData): void;
+    applyNetworkMovementUpdate(updateData: MovementUpdate): void;
     handleShipMovement(delta: number): void;
     applyForce(actor: FlightActor, amt: number, direction?: number): void;
     limitSpeed(): void;
@@ -47,8 +47,7 @@ export declare class MovementComponent {
     applyDeceleration(): void;
     getVelocityRotation(): number;
     trackChanges(): void;
-    addNetworkUpdate(key: string, value: any): void;
-    getAndClearUpdates(): Partial<UpdateData>;
+    getAndClearUpdates(): Partial<MovementUpdate>;
     getSpeed(): number;
     distanceTo(otherActor: FlightActor): number;
     update(delta: number): void;

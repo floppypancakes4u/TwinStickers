@@ -1,4 +1,4 @@
-import { ReplicatedBase } from './ReplicatedBase';
+import { ReplicatedBase } from './ReplicatedBase.js';
 export class MovementActor extends ReplicatedBase {
     constructor({ id, pos, parentActor }) {
         super({ id, pos, parentActor });

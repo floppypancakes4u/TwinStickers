@@ -1,27 +1,7 @@
 import { FlightActor } from "../server/Actors/FlightActor"
-import { Vector2d } from "../../shared/Helpers";
+import { Vector2d } from "./Helpers";
 
-interface Actor {
-  id: string;
-  x: number;
-  y: number;
-  rotation: number;
-  velocity: Vector2d;
-  thrust: number;
-  weight: { effective: number };
-  maxSpeed: number;
-  rotationThrust: number;
-  brakingThrust: number;
-  inputStates: {
-    thrustForward: boolean;
-    braking: boolean;
-    rotateLeft: boolean;
-    rotateRight: boolean;
-  };
-  setRotation: (rotation: number) => void;
-}
-
-interface UpdateData {
+export interface MovementUpdate {
   id: string;
   x?: number;
   y?: number;
@@ -46,25 +26,29 @@ interface StopData {
 export class MovementComponent {
   private actor: FlightActor;
   private needsUpdate: boolean;
-  private updates: Partial<UpdateData>;
   private prevX: number;
   private prevY: number;
   private prevRotation: number;
   private prevVelocity: Vector2d;
   private isApplyingNetworkUpdate: boolean;
+  private NextMovementUpdate!: MovementUpdate;
 
   constructor({ actor }: { actor: FlightActor }) {
     this.actor = actor;
     this.needsUpdate = false;
-    this.updates = {};
     this.prevX = actor.pos.x;
     this.prevY = actor.pos.y;
     this.prevRotation = actor.rotation;
     this.prevVelocity = { ...actor.velocity };
     this.isApplyingNetworkUpdate = false; // Initialize flag
+    this.NextMovementUpdate.id = this.actor.id;
+    this.NextMovementUpdate.x = this.actor.pos.x;
+    this.NextMovementUpdate.y = this.actor.pos.x;
+    this.NextMovementUpdate.rotation = this.actor.rotation;
+    this.NextMovementUpdate.velocity = this.actor.velocity;
   }
 
-  applyNetworkMovementUpdate(updateData: UpdateData) {
+  applyNetworkMovementUpdate(updateData: MovementUpdate) {
     if (updateData.id !== this.actor.id) return; // Ignore updates not meant for this actor
 
     this.isApplyingNetworkUpdate = true; // Set flag before applying updates
@@ -77,7 +61,6 @@ export class MovementComponent {
 
     this.isApplyingNetworkUpdate = false; // Reset flag after applying updates
     this.needsUpdate = false;
-    this.updates = {};
   }
 
   handleShipMovement(delta: number) {
@@ -250,11 +233,24 @@ export class MovementComponent {
 
   trackChanges() {
     if (this.isApplyingNetworkUpdate) return;
-    if (this.prevX !== this.actor.pos.x) this.addNetworkUpdate("x", this.actor.pos.x);
-    if (this.prevY !== this.actor.pos.y) this.addNetworkUpdate("y", this.actor.pos.y);
-    if (this.prevRotation !== this.actor.rotation) this.addNetworkUpdate("rotation", this.actor.rotation);
+    if (this.prevX !== this.actor.pos.x) { 
+      this.needsUpdate = true;
+      this.NextMovementUpdate.x = this.actor.pos.x;
+    }
+
+    if (this.prevY !== this.actor.pos.y) { 
+      this.needsUpdate = true;
+      this.NextMovementUpdate.x = this.actor.pos.y;
+    }
+
+    if (this.prevRotation !== this.actor.rotation) { 
+      this.needsUpdate = true;
+      this.NextMovementUpdate.rotation = this.actor.rotation;
+    }
+
     if (this.prevVelocity.x !== this.actor.velocity.x || this.prevVelocity.y !== this.actor.velocity.y) {
-      this.addNetworkUpdate("velocity", { x: this.actor.velocity.x, y: this.actor.velocity.y });
+      this.needsUpdate = true;
+      this.NextMovementUpdate.velocity = { x: this.actor.velocity.x, y: this.actor.velocity.y };
     }
 
     this.prevX = this.actor.pos.x;
@@ -263,20 +259,25 @@ export class MovementComponent {
     this.prevVelocity = { ...this.actor.velocity };
   }
 
-  addNetworkUpdate(key: string, value: any) {
-    // log.info("addNetworkUpdate", k, v)
-    if (!this.isApplyingNetworkUpdate) { // Check if network update is in progress
-      this.updates[key] = value;
-      this.needsUpdate = true;
-    }
-  }
+  // addNetworkUpdate(key: string, value: any) {
+  //   // log.info("addNetworkUpdate", k, v)
+  //   if (!this.isApplyingNetworkUpdate) { // Check if network update is in progress
+  //     this.updates[key] = value;
+  //     this.needsUpdate = true;
+  //   }
+  // }
 
-  getAndClearUpdates(): Partial<UpdateData> {
-    const updates = { id: this.actor.id, ...this.updates };
-    this.updates = {};
+  getAndClearUpdates(): Partial<MovementUpdate> {
+    const update = this.NextMovementUpdate;
+    this.NextMovementUpdate.id = this.actor.id;
+    this.NextMovementUpdate.x = this.actor.pos.x;
+    this.NextMovementUpdate.y = this.actor.pos.x;
+    this.NextMovementUpdate.rotation = this.actor.rotation;
+    this.NextMovementUpdate.velocity = this.actor.velocity;
+
     this.needsUpdate = false;
 
-    return updates;
+    return update;
   }
 
   getSpeed(): number {

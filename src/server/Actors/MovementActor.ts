@@ -1,6 +1,5 @@
-import { ReplicatedBase, ReplicatedBaseConstructor } from './ReplicatedBase';
-import { Vector2d } from "../../shared/Helpers";
-import { MovementComponent } from "../../shared/MovementComonent";
+import { ReplicatedBase, ReplicatedBaseConstructor, Vector2d } from './ReplicatedBase';
+import { MovementUpdate } from "../../shared/MovementComonent";
 
 export interface MovementActorConstructor extends ReplicatedBaseConstructor {
 
@@ -16,9 +15,9 @@ export class MovementActor extends ReplicatedBase {
         this.velocity = { x: 0, y: 0 };
         this._lastVelocity = { x: 0, y: 0 };
     }
-
-    public setMovementUpdateFromClient(data) {    
-        Object.assign(this, data);
+    
+    public setMovementUpdateFromClient(update: MovementUpdate) {    
+        Object.assign(this, update);
     }  
 
     public update(deltaTime: number) {
